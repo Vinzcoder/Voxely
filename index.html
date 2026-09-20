@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Voxely</title>
+<title>BLOX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
@@ -87,6 +87,9 @@
   #help { position: absolute; right: 16px; bottom: 16px; max-width: 330px; text-align: right; font-size: 10px; line-height: 1.8; letter-spacing: .06em; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
   #help b { color: var(--accent); }
 
+  #offline { display: none; position: fixed; inset: 0; z-index: 20; place-items: center; background: rgba(0,0,0,.92); font-size: 13px; letter-spacing: .1em; text-align: center; line-height: 2; }
+  body.offline #offline { display: grid; }
+  #offline b { color: var(--accent); }
 
   @media (max-width: 640px) { .logo { font-size: 64px; } #help { display: none; } #players { display: none; } }
 </style>
@@ -97,7 +100,7 @@
 
 <div id="login">
   <form id="loginForm" autocomplete="off">
-    <div class="logo">Voxely</div>
+    <div class="logo">BL<span class="o">O</span>X</div>
     <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
     <div>
       <label class="field" for="name">Nama pemain</label>
@@ -122,10 +125,10 @@
   </div>
 </div>
 
-
+<div id="offline"><div>KONEKSI <b>TERPUTUS</b><br>muat ulang halaman (F5) untuk main lagi</div></div>
 
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script>
 (() => {
   'use strict';
@@ -139,7 +142,15 @@
   const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
 
   const $ = (id) => document.getElementById(id);
-  const socket = io();
+  const socket = io({
+    path: '/api/socket-io/socket.io',
+    transports: ['websocket'],
+    upgrade: false,
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 5000,
+  });
 
   // ============================================================
   //  ENGINE, SCENE, KAMERA
@@ -544,7 +555,21 @@
     }
   });
 
-  socket.on('disconnect', () => document.body.classList.add('offline'));
+  socket.on('connect', () => {
+    document.body.classList.remove('offline');
+  });
+
+  socket.on('connect_error', (err) => {
+    console.error('[socket.io] connect_error:', err.message);
+    document.body.classList.add('offline');
+    const offlineText = document.querySelector('#offline div');
+    if (offlineText) offlineText.innerHTML = 'KONEKSI <b>TERPUTUS</b><br>server realtime tidak tersedia';
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.warn('[socket.io] disconnected:', reason);
+    document.body.classList.add('offline');
+  });
 
   // ============================================================
   //  GAME LOOP
