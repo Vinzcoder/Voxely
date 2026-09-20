@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLOX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000;
+    --fg: #f2f2f2;
+    --dim: #7d7d7d;
+    --line: #262626;
+    --accent: #ff6a00;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: var(--mono); }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
+
+  /* ---------- LOGIN ---------- */
+  #login {
+    position: fixed; inset: 0; z-index: 10;
+    display: grid; place-items: center;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.72) 0%, rgba(0,0,0,.94) 100%);
+    backdrop-filter: blur(5px);
+  }
+  #login form { width: min(380px, calc(100vw - 48px)); }
+  #login > form > * { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+  #login > form > :nth-child(2) { animation-delay: .08s; }
+  #login > form > :nth-child(3) { animation-delay: .16s; }
+  #login > form > :nth-child(4) { animation-delay: .24s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+  .logo { font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .logo .o { color: var(--accent); }
+  .tag { margin: 10px 0 34px; font-size: 11px; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
+  .tag b { color: var(--accent); font-weight: 700; }
+  label.field { display: block; font-size: 10px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; }
+  #name {
+    width: 100%; background: transparent; color: var(--fg);
+    border: 0; border-bottom: 2px solid var(--line);
+    font: 700 22px var(--mono); padding: 8px 0 10px; outline: none; transition: border-color .2s;
+  }
+  #name:focus { border-color: var(--accent); }
+  #name::placeholder { color: #333; }
+  #play {
+    margin-top: 26px; width: 100%; padding: 15px 18px; cursor: pointer;
+    background: var(--accent); color: #000; border: 2px solid var(--accent);
+    font: 800 14px var(--mono); letter-spacing: .18em; text-transform: uppercase;
+    display: flex; justify-content: space-between; transition: background .15s, color .15s;
+  }
+  #play:hover:not(:disabled) { background: #000; color: var(--accent); }
+  #play:disabled { opacity: .5; cursor: wait; }
+
+  /* ---------- HUD ---------- */
+  #hud { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+  body.playing #hud { display: block; }
+  body.playing #login { display: none; }
+  #hud > * { pointer-events: auto; }
+
+  .panel { background: rgba(0,0,0,.74); border: 1px solid var(--line); backdrop-filter: blur(4px); }
+
+  #players { position: absolute; top: 16px; right: 16px; min-width: 190px; max-width: 240px; border-top: 2px solid var(--accent); padding: 10px 12px 8px; font-size: 12px; }
+  #players h3 { font-size: 10px; letter-spacing: .14em; color: var(--dim); font-weight: 700; margin-bottom: 8px; }
+  #players h3 span { color: var(--accent); }
+  #roster { list-style: none; max-height: 40vh; overflow: auto; }
+  #roster li { display: flex; align-items: center; gap: 8px; padding: 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #roster i { flex: none; width: 8px; height: 8px; }
+  #roster li.me { color: var(--accent); font-weight: 700; }
+
+  #chat { position: absolute; left: 16px; bottom: 16px; width: min(430px, calc(100vw - 32px)); border-left: 2px solid var(--accent); opacity: .72; transition: opacity .2s; }
+  #chat:focus-within { opacity: 1; }
+  #log { height: 150px; overflow-y: auto; padding: 10px 12px; font-size: 12px; line-height: 1.55; scrollbar-width: none; }
+  #log::-webkit-scrollbar { display: none; }
+  #log .msg { word-break: break-word; }
+  #log .msg b { font-weight: 800; }
+  #log .sys { color: var(--dim); }
+  #log .sys::before { content: '» '; color: var(--accent); }
+  #chat .row { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding: 0 12px; }
+  #chat .row span { color: var(--accent); font-weight: 800; }
+  #msg { flex: 1; background: transparent; border: 0; outline: none; color: var(--fg); font: 12px var(--mono); padding: 11px 0; }
+  #msg::placeholder { color: #4a4a4a; }
+
+  #help { position: absolute; right: 16px; bottom: 16px; max-width: 330px; text-align: right; font-size: 10px; line-height: 1.8; letter-spacing: .06em; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
+  #help b { color: var(--accent); }
+
+  #offline { display: none; position: fixed; inset: 0; z-index: 20; place-items: center; background: rgba(0,0,0,.92); font-size: 13px; letter-spacing: .1em; text-align: center; line-height: 2; }
+  body.offline #offline { display: grid; }
+  #offline b { color: var(--accent); }
+
+  @media (max-width: 640px) { .logo { font-size: 64px; } #help { display: none; } #players { display: none; } }
+</style>
+</head>
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="login">
+  <form id="loginForm" autocomplete="off">
+    <div class="logo">BL<span class="o">O</span>X</div>
+    <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
+    <div>
+      <label class="field" for="name">Nama pemain</label>
+      <input id="name" maxlength="16" placeholder="guest" spellcheck="false" autofocus>
+    </div>
+    <button id="play" type="submit"><span>Main</span><span>&rarr;</span></button>
+  </form>
+</div>
+
+<div id="hud">
+  <div id="players" class="panel">
+    <h3>PEMAIN <span id="count">0</span></h3>
+    <ul id="roster"></ul>
+  </div>
+  <div id="chat" class="panel">
+    <div id="log"></div>
+    <div class="row"><span>&rsaquo;</span><input id="msg" maxlength="120" placeholder="tekan Enter untuk chat" spellcheck="false" autocomplete="off"></div>
+  </div>
+  <div id="help">
+    <b>WASD</b> / <b>PANAH</b> gerak &nbsp;&middot;&nbsp; <b>SPASI</b> lompat<br>
+    <b>DRAG</b> putar kamera &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom &nbsp;&middot;&nbsp; <b>ENTER</b> chat
+  </div>
+</div>
+
+<div id="offline"><div>KONEKSI <b>TERPUTUS</b><br>muat ulang halaman (F5) untuk main lagi</div></div>
+
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  // ============================================================
+  //  KONFIGURASI (satuan = "stud", kayak Roblox)
+  // ============================================================
+  const SPEED = 16;        // kecepatan jalan
+  const JUMP_POWER = 52;   // kecepatan awal lompat (puncak ~6.4 stud)
+  const GRAVITY = 196;
+  const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
+
+  const $ = (id) => document.getElementById(id);
+  const socket = io();
+
+  // ============================================================
+  //  ENGINE, SCENE, KAMERA
+  // ============================================================
+  const canvas = $('game');
+  const engine = new BABYLON.Engine(canvas, true);
+  const scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color4(0.56, 0.79, 1, 1);
+  scene.collisionsEnabled = true;
+
+  const V3 = BABYLON.Vector3;
+
+  const hemi = new BABYLON.HemisphericLight('hemi', new V3(0.2, 1, 0.1), scene);
+  hemi.intensity = 0.85;
+  hemi.groundColor = new BABYLON.Color3(0.38, 0.4, 0.45);
+  const sun = new BABYLON.DirectionalLight('sun', new V3(-0.4, -1, -0.3), scene);
+  sun.intensity = 0.5;
+
+  const camera = new BABYLON.ArcRotateCamera('cam', -Math.PI / 2, 1.1, 70, new V3(0, 4, 0), scene);
+  camera.minZ = 0.5;
+  camera.maxZ = 1200;
+  camera.lowerRadiusLimit = 8;
+  camera.upperRadiusLimit = 70;
+  camera.lowerBetaLimit = 0.2;
+  camera.upperBetaLimit = Math.PI / 2 - 0.05;   // jangan tembus tanah
+  camera.wheelDeltaPercentage = 0.02;
+  camera.panningSensibility = 0;                // matikan geser kamera
+  camera.angularSensibilityX = camera.angularSensibilityY = 700;
+  camera.inputs.removeByType('ArcRotateCameraKeyboardMoveInput'); // WASD urusan kita
+  camera.attachControl(canvas, true);
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  // ============================================================
+  //  DUNIA: baseplate + beberapa balok buat lompat-lompat
+  // ============================================================
+  const matCache = {};
+  function mat(hex) {
+    if (!matCache[hex]) {
+      const m = new BABYLON.StandardMaterial('m' + hex, scene);
+      m.diffuseColor = BABYLON.Color3.FromHexString(hex);
+      m.specularColor = BABYLON.Color3.Black();
+      matCache[hex] = m;
+    }
+    return matCache[hex];
+  }
+
+  // tekstur baseplate digambar pakai canvas — tanpa file gambar
+  const gt = new BABYLON.DynamicTexture('groundTex', 256, scene, true);
+  const gc = gt.getContext();
+  gc.fillStyle = '#9aa0a8'; gc.fillRect(0, 0, 256, 256);
+  gc.strokeStyle = '#838992'; gc.lineWidth = 6; gc.strokeRect(0, 0, 256, 256);
+  gc.fillStyle = '#8b919a';
+  for (const [sx, sy] of [[64, 64], [192, 64], [64, 192], [192, 192]]) { gc.beginPath(); gc.arc(sx, sy, 10, 0, Math.PI * 2); gc.fill(); }
+  gt.update();
+  gt.wrapU = gt.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+  gt.uScale = gt.vScale = 25;                    // 200 stud / 8 stud per ubin
+
+  const groundMat = new BABYLON.StandardMaterial('groundMat', scene);
+  groundMat.diffuseTexture = gt;
+  groundMat.specularColor = BABYLON.Color3.Black();
+  const ground = BABYLON.MeshBuilder.CreateBox('ground', { width: 200, height: 4, depth: 200 }, scene);
+  ground.position.y = -2;                        // permukaan atas = y 0
+  ground.material = groundMat;
+  ground.checkCollisions = true;
+
+  function block(x, y, z, w, h, d, hex) {         // y = titik tengah
+    const b = BABYLON.MeshBuilder.CreateBox('block', { width: w, height: h, depth: d }, scene);
+    b.position.set(x, y, z);
+    b.material = mat(hex);
+    b.checkCollisions = true;
+    return b;
+  }
+
+  // tangga raksasa
+  const stairColors = ['#ff9a3d', '#ff8420', '#ff6a00', '#e85a00', '#c94b00'];
+  stairColors.forEach((c, i) => block(0, (i + 1), 24 + i * 8, 12, 2 * (i + 1), 8, c));
+  // balok & platform melayang (mini obby)
+  block(-22, 1.5, 8, 10, 3, 10, '#3498db');
+  block(-30, 2.5, -6, 8, 5, 8, '#9b59b6');
+  block(22, 1, -14, 12, 2, 12, '#2ecc71');
+  block(30, 3, -30, 8, 1, 8, '#f1c40f');
+  block(18, 6, -30, 8, 1, 8, '#e74c3c');
+  block(6, 9, -30, 8, 1, 8, '#ff6a00');
+
+  // ============================================================
+  //  TEKS 3D (nametag & bubble chat) — digambar ke DynamicTexture
+  // ============================================================
+  function roundRect(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+
+  function textPlane(lines, o) {
+    const { W, H, w, h, px, bg, fg } = o;
+    const tex = new BABYLON.DynamicTexture('txt', { width: W, height: H }, scene, true);
+    tex.hasAlpha = true;
+    const c = tex.getContext();
+    c.clearRect(0, 0, W, H);
+    c.fillStyle = bg;
+    roundRect(c, 4, 4, W - 8, H - 8, H * 0.22);
+    c.fill();
+
+    const font = (s) => `800 ${s}px "JetBrains Mono", monospace`;
+    let size = px;
+    c.font = font(size);
+    const widest = () => Math.max(...lines.map((l) => c.measureText(l).width));
+    while (widest() > W - 48 && size > 14) { size -= 2; c.font = font(size); }
+
+    c.fillStyle = fg;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    const lh = size * 1.2;
+    const y0 = H / 2 - ((lines.length - 1) * lh) / 2;
+    lines.forEach((l, i) => c.fillText(l, W / 2, y0 + i * lh + size * 0.05));
+    tex.update();
+
+    const m = new BABYLON.StandardMaterial('txtMat', scene);
+    m.emissiveTexture = tex;
+    m.opacityTexture = tex;
+    m.disableLighting = true;
+    m.backFaceCulling = false;
+
+    const p = BABYLON.MeshBuilder.CreatePlane('txtPlane', { width: w, height: h }, scene);
+    p.material = m;
+    p.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;   // selalu menghadap kamera
+    p.isPickable = false;
+    return p;
+  }
+
+  // ============================================================
+  //  AVATAR bergaya Roblox R6: kepala, badan, 2 tangan, 2 kaki
+  //  (titik tengah = tengah badan, tinggi total 5 stud)
+  // ============================================================
+  let faceMat = null;
+  function getFaceMat() {
+    if (faceMat) return faceMat;
+    const t = new BABYLON.DynamicTexture('face', 128, scene, true);
+    const c = t.getContext();
+    c.clearRect(0, 0, 128, 128);
+    c.fillStyle = '#1a1a1a';
+    c.beginPath(); c.arc(40, 46, 9, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.arc(88, 46, 9, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#1a1a1a'; c.lineWidth = 8; c.lineCap = 'round';
+    c.beginPath(); c.arc(64, 60, 34, 0.18 * Math.PI, 0.82 * Math.PI); c.stroke();
+    t.hasAlpha = true;
+    t.update();
+    faceMat = new BABYLON.StandardMaterial('faceMat', scene);
+    faceMat.diffuseTexture = t;
+    faceMat.specularColor = BABYLON.Color3.Black();
+    return faceMat;
+  }
+
+  function buildAvatar(torsoColor) {
+    const root = new BABYLON.TransformNode('avatar', scene);
+    const part = (w, h, d, hex, x, y, z) => {
+      const m = BABYLON.MeshBuilder.CreateBox('part', { width: w, height: h, depth: d }, scene);
+      m.material = mat(hex);
+      m.parent = root;
+      m.position.set(x, y, z);
+      m.isPickable = false;
+      return m;
+    };
+    // anggota badan berputar dari sendi (pivot di atas), jadi bisa diayun
+    const limb = (w, h, d, hex, x, y, z) => {
+      const pivot = new BABYLON.TransformNode('pivot', scene);
+      pivot.parent = root;
+      pivot.position.set(x, y, z);
+      const m = BABYLON.MeshBuilder.CreateBox('limb', { width: w, height: h, depth: d }, scene);
+      m.material = mat(hex);
+      m.parent = pivot;
+      m.position.y = -h / 2;
+      m.isPickable = false;
+      return pivot;
+    };
+
+    const SKIN = '#f6d55c', PANTS = '#3b5b92';
+    part(2, 2, 1, torsoColor, 0, 0.5, 0);                    // badan
+    const head = part(1.4, 1.2, 1.2, SKIN, 0, 2.1, 0);       // kepala
+    const face = BABYLON.MeshBuilder.CreatePlane('face', { width: 1.0, height: 0.9 }, scene);
+    face.material = getFaceMat();
+    face.parent = head;
+    face.position.set(0, -0.02, 0.63);
+    face.rotation.y = Math.PI;                                // hadap ke +Z (depan)
+    face.isPickable = false;
+
+    return {
+      root,
+      legL: limb(1, 2, 1, PANTS, -0.5, -0.5, 0),
+      legR: limb(1, 2, 1, PANTS, 0.5, -0.5, 0),
+      armL: limb(1, 2, 1, SKIN, -1.5, 1.5, 0),
+      armR: limb(1, 2, 1, SKIN, 1.5, 1.5, 0),
+    };
+  }
+
+  // ============================================================
+  //  ENTITAS PEMAIN (lokal & remote)
+  // ============================================================
+  const others = {};      // id -> entitas pemain lain
+  const roster = {};      // id -> {name, color} untuk daftar pemain
+  let me = null;          // entitas kita sendiri
+  let myId = null;
+
+  function createEntity(info, isLocal) {
+    let root;
+    if (isLocal) {
+      // kotak tak terlihat yang bertugas sebagai "badan fisik" (collision ellipsoid)
+      root = BABYLON.MeshBuilder.CreateBox('me', { size: 1 }, scene);
+      root.isVisible = false;
+      root.ellipsoid = new V3(1.2, 2.5, 1.2);
+    } else {
+      root = new BABYLON.TransformNode('p_' + info.id, scene);
+    }
+    root.position.set(info.x, info.y, info.z);
+
+    const av = buildAvatar(info.color);
+    av.root.parent = root;
+    av.root.rotation.y = info.ry || 0;
+
+    const nameTag = textPlane([info.name], {
+      W: 512, H: 128, w: 6, h: 1.5, px: 64,
+      bg: 'rgba(0,0,0,.68)', fg: isLocal ? '#ff8a33' : '#ffffff',
+    });
+    nameTag.parent = root;
+    nameTag.position.y = 3.9;
+
+    return {
+      root, avatar: av.root, nameTag,
+      legL: av.legL, legR: av.legR, armL: av.armL, armR: av.armR,
+      target: root.position.clone(), ry: info.ry || 0, swing: 0,
+      bubble: null, bubbleTimer: 0,
+    };
+  }
+
+  function removeEntity(e) {
+    if (!e) return;
+    clearTimeout(e.bubbleTimer);
+    // material label/bubble milik sendiri -> boleh dibuang; material avatar dipakai bersama -> jangan
+    e.nameTag.dispose(false, true);
+    if (e.bubble) e.bubble.dispose(false, true);
+    e.root.dispose();
+  }
+
+  function say(e, text) {
+    clearTimeout(e.bubbleTimer);
+    if (e.bubble) e.bubble.dispose(false, true);
+    const lines = [text.slice(0, 24)];
+    if (text.length > 24) lines.push(text.length > 48 ? text.slice(24, 47) + '…' : text.slice(24));
+    e.bubble = textPlane(lines, {
+      W: 1024, H: 256, w: 9, h: 2.25, px: 84,
+      bg: 'rgba(255,255,255,.96)', fg: '#111111',
+    });
+    e.bubble.parent = e.root;
+    e.bubble.position.y = 6;
+    e.bubbleTimer = setTimeout(() => { e.bubble.dispose(false, true); e.bubble = null; }, 5000);
+  }
+
+  function animate(e, walking, t) {
+    const target = walking ? Math.sin(t * 12) * 0.9 : 0;
+    e.swing += (target - e.swing) * 0.3;
+    e.legL.rotation.x = e.swing;
+    e.legR.rotation.x = -e.swing;
+    e.armL.rotation.x = -e.swing;
+    e.armR.rotation.x = e.swing;
+  }
+
+  function lerpAngle(a, b, t) {
+    const d = ((((b - a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
+    return a + d * t;
+  }
+
+  // ============================================================
+  //  INPUT
+  // ============================================================
+  const keys = new Set();
+  const down = (...codes) => codes.some((c) => keys.has(c));
+  const msgInput = $('msg');
+
+  window.addEventListener('keydown', (e) => {
+    if (!me) return;
+    if (e.code === 'Enter') { e.preventDefault(); msgInput.focus(); return; }
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+    keys.add(e.code);
+  });
+  window.addEventListener('keyup', (e) => keys.delete(e.code));
+  window.addEventListener('blur', () => keys.clear());
+
+  msgInput.addEventListener('focus', () => keys.clear());
+  msgInput.addEventListener('keydown', (e) => {
+    e.stopPropagation();                       // ketikan chat tidak menggerakkan karakter
+    if (e.key === 'Enter') {
+      const text = msgInput.value.trim();
+      if (text) socket.emit('chat', text);
+      msgInput.value = '';
+      msgInput.blur();
+    } else if (e.key === 'Escape') {
+      msgInput.value = '';
+      msgInput.blur();
+    }
+  });
+
+  // ============================================================
+  //  UI: chat & daftar pemain
+  // ============================================================
+  const log = $('log');
+  function addChat(m) {
+    const row = document.createElement('div');
+    row.className = 'msg' + (m.system ? ' sys' : '');
+    if (m.system) {
+      row.textContent = m.text;
+    } else {
+      const n = document.createElement('b');
+      n.style.color = m.color;
+      n.textContent = m.name + ': ';
+      row.append(n, m.text);                   // textContent-safe, tidak ada innerHTML
+    }
+    log.append(row);
+    while (log.children.length > 60) log.firstChild.remove();
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function renderRoster() {
+    const ids = Object.keys(roster);
+    $('count').textContent = ids.length;
+    const ul = $('roster');
+    ul.replaceChildren();
+    for (const id of ids) {
+      const li = document.createElement('li');
+      const dot = document.createElement('i');
+      dot.style.background = roster[id].color;
+      li.append(dot, roster[id].name);
+      if (id === myId) li.classList.add('me');
+      ul.append(li);
+    }
+  }
+
+  // ============================================================
+  //  LOGIN & NETWORKING
+  // ============================================================
+  const nameInput = $('name');
+  try { nameInput.value = localStorage.getItem('blox-name') || ''; } catch (_) {}
+
+  $('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    try { localStorage.setItem('blox-name', name); } catch (_) {}
+    $('play').disabled = true;
+    socket.emit('join', name);
+  });
+
+  socket.on('init', ({ me: info, players }) => {
+    myId = info.id;
+    for (const id in players) {
+      roster[id] = players[id];
+      if (id !== myId) others[id] = createEntity(players[id], false);
+    }
+    me = createEntity(info, true);
+    vy = 0; grounded = false;
+
+    camera.alpha = -Math.PI / 2;               // kamera di belakang punggung
+    camera.beta = 1.15;
+    camera.radius = 28;
+    camera.lockedTarget = me.root;             // kamera mengikuti kita
+
+    document.body.classList.add('playing');
+    renderRoster();
+    addChat({ system: true, text: 'selamat datang! tekan Enter untuk ngobrol' });
+  });
+
+  socket.on('player-joined', (p) => {
+    if (!myId || others[p.id]) return;
+    roster[p.id] = p;
+    others[p.id] = createEntity(p, false);
+    renderRoster();
+  });
+
+  socket.on('player-moved', (d) => {
+    const e = others[d.id];
+    if (!e) return;
+    e.target.set(d.x, d.y, d.z);
+    e.ry = d.ry;
+  });
+
+  socket.on('player-left', (id) => {
+    if (!myId) return;
+    removeEntity(others[id]);
+    delete others[id];
+    delete roster[id];
+    renderRoster();
+  });
+
+  socket.on('chat', (m) => {
+    if (!myId) return;
+    addChat(m);
+    if (m.id) {
+      const e = m.id === myId ? me : others[m.id];
+      if (e) say(e, m.text);
+    }
+  });
+
+  socket.on('disconnect', () => document.body.classList.add('offline'));
+
+  // ============================================================
+  //  GAME LOOP
+  // ============================================================
+  let vy = 0, grounded = false, lastSent = 0;
+  const last = { x: 1e9, y: 0, z: 0, ry: 0 };
+  const r2 = (n) => Math.round(n * 100) / 100;
+
+  function updateLocal(dt, t) {
+    // arah maju = arah kamera (diproyeksikan ke tanah)
+    const fx = -Math.cos(camera.alpha), fz = -Math.sin(camera.alpha);
+    const fwd = (down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0);
+    const str = (down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0);
+    let dx = fx * fwd + fz * str;
+    let dz = fz * fwd - fx * str;
+    const len = Math.hypot(dx, dz);
+    const walking = len > 0;
+    if (walking) {
+      dx /= len; dz /= len;
+      me.avatar.rotation.y = lerpAngle(me.avatar.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 15));
+    }
+
+    if (grounded && down('Space')) { vy = JUMP_POWER; grounded = false; }
+    vy = Math.max(vy - GRAVITY * dt, -150);
+
+    const dy = vy * dt;
+    const y0 = me.root.position.y;
+    me.root.moveWithCollisions(new V3(dx * SPEED * dt, dy, dz * SPEED * dt));
+    const movedY = me.root.position.y - y0;
+
+    if (vy < 0 && movedY > dy + 0.001) { grounded = true; vy = 0; }        // mendarat
+    else {
+      grounded = false;
+      if (vy > 0 && movedY < dy - 0.001) vy = 0;                            // kepala kejedot
+    }
+
+    if (me.root.position.y < -60) { me.root.position.set(0, 8, 0); vy = 0; } // jatuh ke void -> respawn
+    me.root.computeWorldMatrix(true);                                       // biar kamera tidak telat 1 frame
+    animate(me, walking && grounded, t);
+
+    // kirim posisi ke server hanya kalau berubah
+    const now = performance.now();
+    if (now - lastSent >= SEND_EVERY) {
+      const p = me.root.position, ry = me.avatar.rotation.y;
+      if (Math.abs(p.x - last.x) + Math.abs(p.y - last.y) + Math.abs(p.z - last.z) > 0.01 || Math.abs(ry - last.ry) > 0.01) {
+        socket.emit('move', { x: r2(p.x), y: r2(p.y), z: r2(p.z), ry: r2(ry) });
+        last.x = p.x; last.y = p.y; last.z = p.z; last.ry = ry;
+      }
+      lastSent = now;
+    }
+  }
+
+  function updateRemote(e, t) {
+    const p = e.root.position;
+    const flat = Math.hypot(e.target.x - p.x, e.target.z - p.z);
+    V3.LerpToRef(p, e.target, 0.25, p);                                     // halus antar update jaringan
+    e.avatar.rotation.y = lerpAngle(e.avatar.rotation.y, e.ry, 0.25);
+    animate(e, flat > 0.1, t);
+  }
+
+  scene.onBeforeRenderObservable.add(() => {
+    const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
+    const t = performance.now() / 1000;
+    if (!me) { camera.alpha += dt * 0.12; return; }   // di layar login: kamera berputar pelan
+    updateLocal(dt, t);
+    for (const id in others) updateRemote(others[id], t);
+  });
+
+  engine.runRenderLoop(() => scene.render());
+  window.addEventListener('resize', () => engine.resize());
+})();
+</script>
+</body>
+</html>
