@@ -1,5 +1,5 @@
 // ============================================================
-//  BLOX — server paling sederhana
+//  Voxely — server paling sederhana
 //  express   -> menyajikan index.html
 //  socket.io -> multiplayer (posisi pemain) + chat
 //  Setiap game = 1 "room" socket.io, jadi pemain di game A
@@ -27,6 +27,7 @@ const rnd = (r) => (Math.random() - 0.5) * 2 * r;
 const GAMES = {
   baseplate: { spawn: () => ({ x: rnd(8), y: 6, z: rnd(8) }) },
   obby:      { spawn: () => ({ x: rnd(8), y: 4, z: rnd(8) }) },
+  mygame:    { spawn: () => ({ x: 0, y: 8, z: 0 }) },
 };
 
 // id socket -> { id, name, game, shirt, pants, skin, x, y, z, ry }
@@ -117,5 +118,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`BLOX jalan di http://localhost:${PORT}`);
+  console.log(`Voxely jalan di http://localhost:${PORT}`);
 });

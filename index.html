@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BLOX</title>
+<title>Voxely</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
@@ -115,6 +115,36 @@
     .lobby-head, .lobby-col { position: static; transform: none; width: 100% !important; }
   }
 
+  #createGame { margin-top: 14px; width: 100%; padding: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .14em; cursor: pointer; text-transform: uppercase; }
+  #createGame:hover { background: var(--accent); color: #000; }
+  #builder { position: fixed; inset: 0; z-index: 25; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,.78); backdrop-filter: blur(6px); }
+  #builder .card { width: min(620px, 100%); max-height: min(720px, calc(100vh - 40px)); overflow: auto; padding: 24px; background: #050505; border: 1px solid var(--line); border-top: 2px solid var(--accent); animation: rise .25s both; }
+  #builder h2 { margin: 6px 0 18px; font-size: 24px; }
+  #builder .eyebrow { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .18em; }
+  .builder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .builder-field { display: flex; flex-direction: column; gap: 7px; }
+  .builder-field.full { grid-column: 1 / -1; }
+  .builder-field label { color: var(--dim); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .builder-field input, .builder-field textarea { width: 100%; color: var(--fg); background: #0b0b0b; border: 1px solid var(--line); padding: 10px; font: 12px var(--mono); outline: none; }
+  .builder-field textarea { min-height: 58px; resize: vertical; }
+  .builder-field input:focus, .builder-field textarea:focus { border-color: var(--accent); }
+  #blockRows { display: grid; gap: 8px; }
+  .block-row { display: grid; grid-template-columns: repeat(3, 1fr) repeat(3, .8fr) 52px; gap: 6px; align-items: center; }
+  .block-row input { min-width: 0; }
+  .block-row button { height: 36px; color: #e5484d; background: transparent; border: 1px solid var(--line); cursor: pointer; }
+  #addBlock { margin-top: 10px; padding: 9px; color: var(--fg); background: transparent; border: 1px solid var(--line); cursor: pointer; font: 11px var(--mono); }
+  #addBlock:hover { border-color: var(--accent); color: var(--accent); }
+  .builder-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .builder-actions button { padding: 12px 14px; cursor: pointer; font: 800 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  #cancelBuilder { color: var(--fg); background: transparent; border: 1px solid var(--line); }
+  #saveBuilder { color: #000; background: var(--accent); border: 1px solid var(--accent); }
+  #mobileControls { display: none; position: fixed; inset: 0; z-index: 6; pointer-events: none; }
+  #joystick { position: absolute; left: 24px; bottom: 24px; width: 116px; height: 116px; border: 2px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(0,0,0,.28); pointer-events: auto; touch-action: none; }
+  #joystickKnob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(255,106,0,.9); border: 2px solid #fff; }
+  #jumpButton { position: absolute; right: 28px; bottom: 38px; width: 82px; height: 82px; border: 2px solid var(--accent); border-radius: 50%; background: rgba(0,0,0,.42); color: var(--fg); font: 800 11px var(--mono); letter-spacing: .08em; pointer-events: auto; touch-action: none; }
+  #jumpButton:active { background: var(--accent); color: #000; }
+  @media (pointer: coarse) { body[data-state="playing"] #mobileControls { display: block; } }
+
   /* ============ HUD ============ */
   #hud { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; }
   body[data-state="playing"] #hud { display: block; }
@@ -186,8 +216,8 @@
 <!-- ========== 1. LOGIN (nama guest) ========== -->
 <div id="screen-login" class="screen">
   <form id="loginForm" autocomplete="off">
-    <div class="logo">BL<span class="o">O</span>X</div>
-    <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
+    <div class="logo">V<span class="o">O</span>XELY</div>
+    <div class="tag">Dunia voxel multiplayer &middot; <b>babylon.js</b> + <b>socket.io</b></div>
     <div>
       <label class="field" for="name">Nama guest kamu</label>
       <input id="name" maxlength="16" placeholder="guest" spellcheck="false" autofocus>
@@ -217,8 +247,23 @@
       <div class="crow"><label>Baju</label><div class="sws" id="sw-shirt"></div></div>
       <div class="crow"><label>Celana</label><div class="sws" id="sw-pants"></div></div>
       <div class="crow"><label>Kulit</label><div class="sws" id="sw-skin"></div></div>
+      <button id="createGame" type="button">+ Buat game</button>
     </div>
   </section>
+</div>
+
+<div id="builder" hidden>
+  <form class="card" id="builderForm" autocomplete="off">
+    <div class="eyebrow">VOXELY CREATOR</div>
+    <h2>Buat game baru</h2>
+    <div class="builder-grid">
+      <div class="builder-field"><label for="gameName">Nama game</label><input id="gameName" maxlength="24" value="My Game" required></div>
+      <div class="builder-field"><label for="gameSky">Warna langit</label><input id="gameSky" type="color" value="#18304d"></div>
+      <div class="builder-field full"><label for="gameDesc">Deskripsi</label><textarea id="gameDesc" maxlength="120">Dunia baru buatan pemain Voxely.</textarea></div>
+      <div class="builder-field full"><label>Balok dunia (x, y, z, lebar, tinggi, dalam, warna)</label><div id="blockRows"></div><button id="addBlock" type="button">+ Tambah balok</button></div>
+    </div>
+    <div class="builder-actions"><button id="cancelBuilder" type="button">Batal</button><button id="saveBuilder" type="submit">Simpan JSON &amp; main</button></div>
+  </form>
 </div>
 
 <!-- ========== 3. HUD (saat main) ========== -->
@@ -255,6 +300,11 @@
   <div id="toast"></div>
 </div>
 
+<div id="mobileControls" aria-label="Kontrol mobile">
+  <div id="joystick" aria-label="Joystick gerak"><div id="joystickKnob"></div></div>
+  <button id="jumpButton" type="button" aria-label="Lompat">LOMPAT</button>
+</div>
+
 <!-- ========== MENU (Lanjut / Keluar) ========== -->
 <div id="menu" hidden>
   <div class="card">
@@ -277,7 +327,7 @@
   'use strict';
 
   // ============================================================
-  //  KONFIGURASI (satuan = "stud", kayak Roblox)
+  //  KONFIGURASI (satuan = "stud")
   // ============================================================
   const SPEED = 16;        // kecepatan jalan
   const JUMP_POWER = 52;   // kecepatan awal lompat (puncak ~6.4 stud)
@@ -397,7 +447,7 @@
   }
 
   // ============================================================
-  //  AVATAR bergaya Roblox R6 — warna dari kostum {shirt, pants, skin}
+  //  AVATAR bergaya Voxely R6 — warna dari kostum {shirt, pants, skin}
   //  (titik tengah = tengah badan, tinggi total 5 stud)
   // ============================================================
   let faceMat = null;
@@ -591,6 +641,24 @@
       sky: [0.17, 0.16, 0.38], fog: true, voidY: -40, build: buildObby },
   };
 
+  let customGame = null;
+  try { customGame = JSON.parse(localStorage.getItem('voxely-mygame') || 'null'); } catch (_) {}
+  function customDefinition() {
+    return customGame && typeof customGame === 'object' && Array.isArray(customGame.blocks) ? customGame : null;
+  }
+  function buildCustomGame() {
+    const definition = customDefinition();
+    if (!definition) return buildBaseplate();
+    makeGround();
+    definition.blocks.forEach((b) => block(b.x, b.y, b.z, b.w, b.h, b.d, b.color));
+    return { respawn: () => ({ x: 0, y: 8, z: 0 }), tick() {} };
+  }
+  function refreshCustomGame() {
+    if (!customDefinition()) return;
+    GAMES.mygame = { name: customGame.name || 'My Game', tag: 'buatanmu', desc: customGame.desc || 'Game buatan pemain Voxely.', sky: customGame.sky || [0.1, 0.2, 0.3], fog: false, voidY: -60, build: buildCustomGame };
+  }
+  refreshCustomGame();
+
   // ============================================================
   //  ENTITAS PEMAIN (lokal & remote)
   // ============================================================
@@ -688,7 +756,7 @@
   const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
   const costume = { ...DEFAULT_COSTUME };
   try {
-    const saved = JSON.parse(localStorage.getItem('blox-costume') || '{}');
+    const saved = JSON.parse(localStorage.getItem('voxely-costume') || '{}');
     for (const k in costume) if (isHex(saved[k])) costume[k] = saved[k].toLowerCase();
   } catch (_) {}
 
@@ -707,7 +775,7 @@
 
   function setColor(part, hex) {
     costume[part] = hex;
-    try { localStorage.setItem('blox-costume', JSON.stringify(costume)); } catch (_) {}
+    try { localStorage.setItem('voxely-costume', JSON.stringify(costume)); } catch (_) {}
     if (preview) preview.mats[part].diffuseColor = BABYLON.Color3.FromHexString(hex);
     refreshSwatches();
   }
@@ -749,6 +817,7 @@
   // ---------- kartu game ----------
   function buildGameCards() {
     const box = $('games');
+    box.replaceChildren();
     for (const id in GAMES) {
       const g = GAMES[id];
       const b = document.createElement('button');
@@ -764,6 +833,45 @@
     }
   }
 
+  function hexToSky(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  }
+  function addBlockRow(values = [0, 1, 0, 8, 2, 8, '#3498db']) {
+    const row = document.createElement('div');
+    row.className = 'block-row';
+    ['x', 'y', 'z', 'w', 'h', 'd'].forEach((label, i) => {
+      const input = document.createElement('input');
+      input.type = 'number'; input.step = '0.5'; input.value = values[i]; input.dataset.key = label; input.setAttribute('aria-label', label); row.append(input);
+    });
+    const color = document.createElement('input');
+    color.type = 'color'; color.value = values[6]; color.dataset.key = 'color'; color.setAttribute('aria-label', 'warna'); row.append(color);
+    const remove = document.createElement('button');
+    remove.type = 'button'; remove.textContent = '×'; remove.title = 'Hapus balok'; remove.addEventListener('click', () => row.remove()); row.append(remove);
+    $('blockRows').append(row);
+  }
+  function openBuilder() {
+    $('builder').hidden = false;
+    $('blockRows').replaceChildren();
+    const blocks = customDefinition()?.blocks || [[0, 1, 0, 8, 2, 8, '#3498db']];
+    blocks.forEach((b) => addBlockRow([b.x, b.y, b.z, b.w, b.h, b.d, b.color]));
+  }
+  $('createGame').addEventListener('click', openBuilder);
+  $('cancelBuilder').addEventListener('click', () => { $('builder').hidden = true; });
+  $('addBlock').addEventListener('click', () => addBlockRow());
+  $('builderForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const blocks = [...document.querySelectorAll('.block-row')].map((row) => {
+      const value = (key) => row.querySelector(`[data-key="${key}"]`).value;
+      return { x: Number(value('x')), y: Number(value('y')), z: Number(value('z')), w: Math.max(1, Number(value('w'))), h: Math.max(1, Number(value('h'))), d: Math.max(1, Number(value('d'))), color: value('color') };
+    });
+    customGame = { format: 'voxely-game', version: 1, name: $('gameName').value.trim() || 'My Game', desc: $('gameDesc').value.trim(), sky: hexToSky($('gameSky').value), blocks };
+    localStorage.setItem('voxely-mygame', JSON.stringify(customGame));
+    const file = new Blob([JSON.stringify(customGame, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(file); link.download = 'voxely_mygame.json'; link.click(); URL.revokeObjectURL(link.href);
+    refreshCustomGame(); buildGameCards(); $('builder').hidden = true; showToast('GAME DISIMPAN');
+  });
+
   function enterLobby() {
     clearWorld();
     applySky(GAMES.baseplate);
@@ -777,12 +885,12 @@
 
   // ---------- login ----------
   const nameInput = $('name');
-  try { nameInput.value = localStorage.getItem('blox-name') || ''; } catch (_) {}
+  try { nameInput.value = localStorage.getItem('voxely-name') || ''; } catch (_) {}
 
   $('loginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     playerName = nameInput.value.replace(/[\u0000-\u001f]/g, '').trim().slice(0, 16) || 'Guest' + Math.floor(1000 + Math.random() * 9000);
-    try { localStorage.setItem('blox-name', nameInput.value.trim()); } catch (_) {}
+    try { localStorage.setItem('voxely-name', nameInput.value.trim()); } catch (_) {}
     $('hello').textContent = playerName;
     setState('lobby');
   });
@@ -888,6 +996,8 @@
   // ============================================================
   const keys = new Set();
   const down = (...codes) => codes.some((c) => keys.has(c));
+  const joystick = { x: 0, y: 0, active: false };
+  let jumpRequested = false;
 
   window.addEventListener('keydown', (e) => {
     if (state !== 'playing') return;
@@ -898,6 +1008,23 @@
   });
   window.addEventListener('keyup', (e) => keys.delete(e.code));
   window.addEventListener('blur', () => keys.clear());
+
+  const joystickEl = $('joystick');
+  const knobEl = $('joystickKnob');
+  function moveJoystick(e) {
+    const r = joystickEl.getBoundingClientRect();
+    const max = r.width * 0.35;
+    const x = e.clientX - (r.left + r.width / 2), y = e.clientY - (r.top + r.height / 2);
+    const length = Math.hypot(x, y) || 1, scale = Math.min(1, max / length);
+    joystick.x = (x * scale) / max; joystick.y = (y * scale) / max;
+    knobEl.style.transform = `translate(calc(-50% + ${x * scale}px), calc(-50% + ${y * scale}px))`;
+  }
+  joystickEl.addEventListener('pointerdown', (e) => { joystick.active = true; joystickEl.setPointerCapture(e.pointerId); moveJoystick(e); });
+  joystickEl.addEventListener('pointermove', (e) => { if (joystick.active) moveJoystick(e); });
+  const resetJoystick = () => { joystick.active = false; joystick.x = joystick.y = 0; knobEl.style.transform = 'translate(-50%, -50%)'; };
+  joystickEl.addEventListener('pointerup', resetJoystick);
+  joystickEl.addEventListener('pointercancel', resetJoystick);
+  $('jumpButton').addEventListener('pointerdown', (e) => { e.preventDefault(); jumpRequested = true; });
 
   msgInput.addEventListener('focus', () => keys.clear());
   msgInput.addEventListener('keydown', (e) => {
@@ -1019,8 +1146,8 @@
   function updateLocal(dt, t) {
     // arah maju = arah kamera (diproyeksikan ke tanah)
     const fx = -Math.cos(camera.alpha), fz = -Math.sin(camera.alpha);
-    const fwd = (down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0);
-    const str = (down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0);
+    const fwd = ((down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0)) - joystick.y;
+    const str = ((down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0)) + joystick.x;
     let dx = fx * fwd + fz * str;
     let dz = fz * fwd - fx * str;
     const len = Math.hypot(dx, dz);
@@ -1030,7 +1157,7 @@
       me.avatar.rotation.y = lerpAngle(me.avatar.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 15));
     }
 
-    if (grounded && down('Space')) { vy = JUMP_POWER; grounded = false; }
+    if (grounded && (down('Space') || jumpRequested)) { vy = JUMP_POWER; grounded = false; jumpRequested = false; }
     vy = Math.max(vy - GRAVITY * dt, -150);
 
     const dy = vy * dt;

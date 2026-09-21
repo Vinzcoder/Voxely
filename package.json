@@ -1,7 +1,7 @@
 {
-  "name": "blox-simple",
+  "name": "voxely",
   "version": "1.0.0",
-  "description": "Roblox clone paling sederhana: Babylon.js + Socket.IO",
+  "description": "Voxely multiplayer voxel game: Babylon.js + Socket.IO",
   "main": "server.js",
   "engines": { "node": ">=18" },
   "scripts": {
