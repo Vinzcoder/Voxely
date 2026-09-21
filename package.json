@@ -1,1 +1,11 @@
-{"name":"blox","private":true,"scripts":{"start":"node server.js"},"dependencies":{"express":"^4.21.2","socket.io":"^4.8.1"}}
+{
+  "name": "blox-vercel",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "socket.io": "4.8.1"
+  }
+}
