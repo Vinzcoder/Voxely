@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Voxely</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLOX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
     --accent: #ff6a00;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   [hidden] { display: none !important; }
-  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; background: var(--bg); color: var(--fg); font-family: var(--mono); }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: var(--mono); }
   button { font-family: var(--mono); }
   #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
 
@@ -37,7 +37,7 @@
   #screen-login form > :nth-child(4) { animation-delay: .24s; }
   #screen-login form > :nth-child(5) { animation-delay: .32s; }
 
-  .logo { font-size: 76px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .logo { font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
   .logo .o { color: var(--accent); }
   .tag { margin: 10px 0 34px; font-size: 11px; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
   .tag b { color: var(--accent); font-weight: 700; }
@@ -157,31 +157,6 @@
     font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; opacity: 0; transition: opacity .25s, transform .25s; white-space: nowrap; }
   #toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-  /* ============ KONTROL SENTUH (HP) ============ */
-  #touchControls { display: none; position: absolute; inset: 0; pointer-events: none; }
-  body.touch #touchControls { display: block; }
-  body.touch #help { display: none; }                // pengguna HP tak butuh panduan keyboard
-
-  #joystick { position: absolute; left: 20px; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
-    width: 128px; height: 128px; border-radius: 50%; pointer-events: auto; touch-action: none;
-    background: rgba(0,0,0,.38); border: 2px solid rgba(255,255,255,.25); backdrop-filter: blur(3px);
-    user-select: none; -webkit-user-select: none; }
-  #joystick.on { border-color: var(--accent); background: rgba(0,0,0,.55); }
-  #joystickKnob { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; border-radius: 50%;
-    background: rgba(255,255,255,.6); border: 2px solid rgba(255,255,255,.75);
-    transform: translate(-50%, -50%); pointer-events: none; }
-  #joystick .jlabel { position: absolute; left: 0; right: 0; bottom: -18px; text-align: center;
-    font-size: 8px; letter-spacing: .22em; color: rgba(255,255,255,.55); pointer-events: none; }
-
-  #btnJump { position: absolute; right: 20px; bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
-    width: 92px; height: 92px; border-radius: 50%; pointer-events: auto; touch-action: none; cursor: pointer;
-    background: rgba(0,0,0,.42); border: 2px solid var(--accent); color: var(--fg); backdrop-filter: blur(3px);
-    display: grid; place-items: center; align-content: center; gap: 3px;
-    font: 800 10px var(--mono); letter-spacing: .18em; user-select: none; -webkit-user-select: none; }
-  #btnJump svg { width: 26px; height: 26px; fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-  #btnJump.on { background: var(--accent); color: #000; }
-  #btnJump.on svg { stroke: #000; }
-
   /* ============ MENU ============ */
   #menu { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(0,0,0,.66); backdrop-filter: blur(5px); }
   #menu .card { width: min(360px, calc(100vw - 40px)); padding: 26px 26px 24px; background: #050505; border: 1px solid var(--line); border-top: 2px solid var(--accent); animation: rise .25s both; }
@@ -201,7 +176,7 @@
   body.offline #offline { display: grid; }
   #offline b { color: var(--accent); }
 
-  @media (max-width: 640px) { .logo { font-size: 46px; } #help, #players { display: none; } #log { height: 110px; } }
+  @media (max-width: 640px) { .logo { font-size: 64px; } #help, #players { display: none; } }
 </style>
 </head>
 <body data-state="login">
@@ -211,8 +186,8 @@
 <!-- ========== 1. LOGIN (nama guest) ========== -->
 <div id="screen-login" class="screen">
   <form id="loginForm" autocomplete="off">
-    <div class="logo">VOXEL<span class="o">Y</span></div>
-    <div class="tag">dunia balok multiplayer &middot; <b>babylon.js</b> + <b>socket.io</b></div>
+    <div class="logo">BL<span class="o">O</span>X</div>
+    <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
     <div>
       <label class="field" for="name">Nama guest kamu</label>
       <input id="name" maxlength="16" placeholder="guest" spellcheck="false" autofocus>
@@ -278,18 +253,6 @@
   </div>
 
   <div id="toast"></div>
-
-  <!-- ---------- kontrol sentuh (khusus HP) ---------- -->
-  <div id="touchControls">
-    <div id="joystick">
-      <div id="joystickKnob"></div>
-      <div class="jlabel">GERAK</div>
-    </div>
-    <button id="btnJump" type="button" aria-label="Lompat">
-      <svg viewBox="0 0 24 24"><path d="M12 19V6M6 12l6-6 6 6"/></svg>
-      <span>LOMPAT</span>
-    </button>
-  </div>
 </div>
 
 <!-- ========== MENU (Lanjut / Keluar) ========== -->
@@ -314,7 +277,7 @@
   'use strict';
 
   // ============================================================
-  //  KONFIGURASI (satuan = "stud", kayak game balok)
+  //  KONFIGURASI (satuan = "stud", kayak Roblox)
   // ============================================================
   const SPEED = 16;        // kecepatan jalan
   const JUMP_POWER = 52;   // kecepatan awal lompat (puncak ~6.4 stud)
@@ -322,7 +285,7 @@
   const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
 
   // Alamat server multiplayer.
-  //   ''  = server yang sama dengan halaman ini (kalau file game disajikan oleh server.js)
+  //   ''  = server yang sama dengan halaman ini (kalau index.html disajikan oleh server.js)
   //   'https://nama-server-kamu.onrender.com' = kalau halaman ini di-host terpisah (mis. Vercel)
   // Server socket.io HARUS jalan di hosting yang menjaga proses Node tetap hidup (bukan serverless).
   const SERVER_URL = '';
@@ -434,7 +397,7 @@
   }
 
   // ============================================================
-  //  AVATAR bergaya blocky R6 — warna dari kostum {shirt, pants, skin}
+  //  AVATAR bergaya Roblox R6 — warna dari kostum {shirt, pants, skin}
   //  (titik tengah = tengah badan, tinggi total 5 stud)
   // ============================================================
   let faceMat = null;
@@ -725,7 +688,7 @@
   const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
   const costume = { ...DEFAULT_COSTUME };
   try {
-    const saved = JSON.parse(localStorage.getItem('voxely-costume') || '{}');
+    const saved = JSON.parse(localStorage.getItem('blox-costume') || '{}');
     for (const k in costume) if (isHex(saved[k])) costume[k] = saved[k].toLowerCase();
   } catch (_) {}
 
@@ -744,7 +707,7 @@
 
   function setColor(part, hex) {
     costume[part] = hex;
-    try { localStorage.setItem('voxely-costume', JSON.stringify(costume)); } catch (_) {}
+    try { localStorage.setItem('blox-costume', JSON.stringify(costume)); } catch (_) {}
     if (preview) preview.mats[part].diffuseColor = BABYLON.Color3.FromHexString(hex);
     refreshSwatches();
   }
@@ -814,12 +777,12 @@
 
   // ---------- login ----------
   const nameInput = $('name');
-  try { nameInput.value = localStorage.getItem('voxely-name') || ''; } catch (_) {}
+  try { nameInput.value = localStorage.getItem('blox-name') || ''; } catch (_) {}
 
   $('loginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     playerName = nameInput.value.replace(/[\u0000-\u001f]/g, '').trim().slice(0, 16) || 'Guest' + Math.floor(1000 + Math.random() * 9000);
-    try { localStorage.setItem('voxely-name', nameInput.value.trim()); } catch (_) {}
+    try { localStorage.setItem('blox-name', nameInput.value.trim()); } catch (_) {}
     $('hello').textContent = playerName;
     setState('lobby');
   });
@@ -854,7 +817,6 @@
     menuOpen = open;
     $('menu').hidden = !open;
     keys.clear();
-    releaseTouch();                                  // lepaskan joystick & tombol lompat
     if (open) msgInput.blur();
   }
 
@@ -944,70 +906,6 @@
   });
 
   // ============================================================
-  //  KONTROL SENTUH (HP) — joystick kiri + tombol lompat kanan
-  //  Muncul otomatis hanya di perangkat sentuh (pointer: coarse).
-  //  Kamera diputar dengan menggeser layar (jari lain), zoom = cubit.
-  // ============================================================
-  const IS_TOUCH = matchMedia('(pointer: coarse)').matches;
-  if (IS_TOUCH) document.body.classList.add('touch');
-
-  const joyEl = $('joystick'), knob = $('joystickKnob'), btnJump = $('btnJump');
-  const JOY_R = 36;                                  // jarak maksimum knob (px)
-  const joy = { id: null, cx: 0, cy: 0 };            // sentuhan aktif di joystick
-  const joyVec = { x: 0, y: 0 };                     // x: kanan(+)/kiri(-), y: maju(+)/mundur(-) — analog 0..1
-  let jumpHeld = false;
-
-  const setKnob = (dx, dy) => { knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; };
-
-  function resetJoy() {
-    joy.id = null; joyVec.x = 0; joyVec.y = 0;
-    setKnob(0, 0);
-    joyEl.classList.remove('on');
-  }
-  function releaseTouch() { resetJoy(); jumpHeld = false; btnJump.classList.remove('on'); }
-
-  function moveJoy(px, py) {
-    let dx = px - joy.cx, dy = py - joy.cy;
-    const d = Math.hypot(dx, dy);
-    if (d > JOY_R) { dx = (dx / d) * JOY_R; dy = (dy / d) * JOY_R; }
-    setKnob(dx, dy);
-    joyVec.x = dx / JOY_R;
-    joyVec.y = -dy / JOY_R;                          // di layar "atas" = maju
-    if (Math.hypot(joyVec.x, joyVec.y) < 0.12) { joyVec.x = 0; joyVec.y = 0; }   // zona mati kecil
-  }
-
-  joyEl.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (joy.id !== null) return;                     // abaikan jari kedua
-    const t = e.changedTouches[0];
-    joy.id = t.identifier;
-    const r = joyEl.getBoundingClientRect();
-    joy.cx = r.left + r.width / 2;
-    joy.cy = r.top + r.height / 2;
-    joyEl.classList.add('on');
-    moveJoy(t.clientX, t.clientY);
-  }, { passive: false });
-
-  joyEl.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    for (const t of e.changedTouches) if (t.identifier === joy.id) moveJoy(t.clientX, t.clientY);
-  }, { passive: false });
-
-  const joyEnd = (e) => { for (const t of e.changedTouches) if (t.identifier === joy.id) resetJoy(); };
-  joyEl.addEventListener('touchend', joyEnd);
-  joyEl.addEventListener('touchcancel', joyEnd);
-
-  btnJump.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    jumpHeld = true;                                 // ditahan = lompat terus (sama kayak tahan SPASI)
-    btnJump.classList.add('on');
-    if (navigator.vibrate) navigator.vibrate(12);    // getar tipis (kalau HP mendukung)
-  }, { passive: false });
-  const jumpEnd = () => { jumpHeld = false; btnJump.classList.remove('on'); };
-  btnJump.addEventListener('touchend', jumpEnd);
-  btnJump.addEventListener('touchcancel', jumpEnd);
-
-  // ============================================================
   //  NETWORKING
   // ============================================================
   let vy = 0, grounded = false, lastSent = 0;
@@ -1043,7 +941,6 @@
 
     log.replaceChildren();
     unread = 0; updateBadge();
-    releaseTouch();
     setChat(false); setMenu(false);
     $('menuGame').textContent = activeGame.name;
     $('menuName').textContent = playerName;
@@ -1102,7 +999,6 @@
     removeEntity(me);
     me = null; myId = null; activeGame = null; activeApi = null;
     keys.clear();
-    releaseTouch();
     clearTimeout(toastTimer); $('toast').classList.remove('show');
     enterLobby();
     setState('lobby');
@@ -1125,21 +1021,16 @@
     const fx = -Math.cos(camera.alpha), fz = -Math.sin(camera.alpha);
     const fwd = (down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0);
     const str = (down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0);
-
-    // input digabung: keyboard + joystick HP (joystick = analog, dorong tipis = jalan pelan)
-    const ix = str + joyVec.x;
-    const iz = fwd + joyVec.y;
-    let dx = fx * iz + fz * ix;
-    let dz = fz * iz - fx * ix;
+    let dx = fx * fwd + fz * str;
+    let dz = fz * fwd - fx * str;
     const len = Math.hypot(dx, dz);
-    const walking = len > 0.001;
-    if (len > 1) { dx /= len; dz /= len; }            // diagonal keyboard dibatasi kecepatan penuh; joystick tetap analog
-
+    const walking = len > 0;
     if (walking) {
+      dx /= len; dz /= len;
       me.avatar.rotation.y = lerpAngle(me.avatar.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 15));
     }
 
-    if (grounded && (down('Space') || jumpHeld)) { vy = JUMP_POWER; grounded = false; }
+    if (grounded && down('Space')) { vy = JUMP_POWER; grounded = false; }
     vy = Math.max(vy - GRAVITY * dt, -150);
 
     const dy = vy * dt;
