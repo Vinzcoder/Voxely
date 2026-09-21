@@ -17,118 +17,254 @@
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: var(--mono); }
+  button { font-family: var(--mono); }
   #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
 
-  /* ---------- LOGIN ---------- */
-  #login {
-    position: fixed; inset: 0; z-index: 10;
-    display: grid; place-items: center;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,.72) 0%, rgba(0,0,0,.94) 100%);
-    backdrop-filter: blur(5px);
-  }
-  #login form { width: min(380px, calc(100vw - 48px)); }
-  #login > form > * { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-  #login > form > :nth-child(2) { animation-delay: .08s; }
-  #login > form > :nth-child(3) { animation-delay: .16s; }
-  #login > form > :nth-child(4) { animation-delay: .24s; }
+  .screen { position: fixed; inset: 0; z-index: 10; display: none; }
+  .panel { background: rgba(0,0,0,.74); border: 1px solid var(--line); backdrop-filter: blur(4px); }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes fade { from { opacity: 0; } }
+
+  /* ============ LOGIN ============ */
+  body[data-state="login"] #screen-login { display: grid; place-items: center;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.72) 0%, rgba(0,0,0,.94) 100%); backdrop-filter: blur(5px); }
+  #screen-login form { width: min(380px, calc(100vw - 48px)); }
+  #screen-login form > * { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+  #screen-login form > :nth-child(2) { animation-delay: .08s; }
+  #screen-login form > :nth-child(3) { animation-delay: .16s; }
+  #screen-login form > :nth-child(4) { animation-delay: .24s; }
 
   .logo { font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
   .logo .o { color: var(--accent); }
   .tag { margin: 10px 0 34px; font-size: 11px; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
   .tag b { color: var(--accent); font-weight: 700; }
   label.field { display: block; font-size: 10px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; }
-  #name {
-    width: 100%; background: transparent; color: var(--fg);
-    border: 0; border-bottom: 2px solid var(--line);
-    font: 700 22px var(--mono); padding: 8px 0 10px; outline: none; transition: border-color .2s;
-  }
+  #name { width: 100%; background: transparent; color: var(--fg); border: 0; border-bottom: 2px solid var(--line);
+    font: 700 22px var(--mono); padding: 8px 0 10px; outline: none; transition: border-color .2s; }
   #name:focus { border-color: var(--accent); }
   #name::placeholder { color: #333; }
-  #play {
-    margin-top: 26px; width: 100%; padding: 15px 18px; cursor: pointer;
+  .hint { margin-top: 10px; font-size: 10px; color: #555; letter-spacing: .06em; }
+  .btn-main { margin-top: 26px; width: 100%; padding: 15px 18px; cursor: pointer;
     background: var(--accent); color: #000; border: 2px solid var(--accent);
     font: 800 14px var(--mono); letter-spacing: .18em; text-transform: uppercase;
-    display: flex; justify-content: space-between; transition: background .15s, color .15s;
+    display: flex; justify-content: space-between; transition: background .15s, color .15s; }
+  .btn-main:hover { background: #000; color: var(--accent); }
+
+  /* ============ LOBBY ============ */
+  body[data-state="lobby"] #screen-lobby { display: block; pointer-events: none; }
+  #screen-lobby::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, rgba(0,0,0,.94) 0, rgba(0,0,0,.55) 30%, rgba(0,0,0,0) 44%, rgba(0,0,0,0) 56%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.94) 100%); }
+  .lobby-head { position: absolute; top: 26px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: auto; animation: fade .6s both; }
+  .hello { font-size: 12px; letter-spacing: .18em; color: var(--dim); text-transform: uppercase; }
+  .hello b { color: var(--fg); font-size: 18px; letter-spacing: .04em; margin-left: 6px; }
+  .guest { display: inline-block; margin-left: 8px; padding: 2px 7px; font-size: 9px; letter-spacing: .16em; color: #000; background: var(--accent); font-weight: 800; vertical-align: 2px; }
+  #rename { margin-top: 8px; background: none; border: 0; color: var(--dim); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  #rename:hover { color: var(--accent); }
+
+  .lobby-col { position: absolute; top: 50%; transform: translateY(-50%); pointer-events: auto; animation: fade .7s .1s both; }
+  .lobby-col.left { left: 32px; width: min(400px, 32vw); }
+  .lobby-col.right { right: 32px; width: min(330px, 28vw); animation-delay: .2s; }
+  .lobby-col h2 { font-size: 10px; letter-spacing: .18em; color: var(--dim); font-weight: 700; margin-bottom: 14px; text-transform: uppercase; }
+  .lobby-col h2 b { color: var(--accent); }
+
+  #games { display: flex; flex-direction: column; gap: 12px; }
+  .game { text-align: left; color: var(--fg); background: rgba(0,0,0,.76); border: 1px solid var(--line); cursor: pointer; padding: 0;
+    display: flex; flex-direction: column; backdrop-filter: blur(4px); transition: transform .15s, border-color .15s; }
+  .game:hover { border-color: var(--accent); transform: translateX(5px); }
+  .joining .game { opacity: .45; pointer-events: none; }
+  .thumb { height: 86px; position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .thumb.baseplate { background: linear-gradient(#8ec9ff 0 46%, transparent 46%), repeating-linear-gradient(90deg, #9aa0a8 0 30px, #858b94 30px 32px); }
+  .thumb.baseplate::before { content: ''; position: absolute; left: 58%; bottom: 26%; width: 34px; height: 30px; background: #ff9a3d; box-shadow: -60px 12px 0 -6px #3498db, 44px 14px 0 -8px #2ecc71; }
+  .thumb.obby { background: #2b2860; }
+  .thumb.obby::before { content: ''; position: absolute; left: 14px; bottom: 12px; width: 28px; height: 8px; background: #3498db;
+    box-shadow: 40px -12px 0 #9b59b6, 80px -24px 0 #e74c3c, 120px -36px 0 #ff6a00, 160px -48px 0 #f1c40f; }
+  .info { padding: 12px 14px; }
+  .title { display: flex; justify-content: space-between; align-items: baseline; }
+  .title span { font-weight: 800; font-size: 16px; letter-spacing: .04em; }
+  .title em { font-style: normal; font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+  .info p { font-size: 11px; line-height: 1.6; color: #a4a4a4; margin: 6px 0 10px; }
+  .foot { display: flex; justify-content: space-between; font-size: 11px; }
+  .cnt i { display: inline-block; width: 7px; height: 7px; background: #3ddc84; margin-right: 6px; }
+  .go { color: var(--accent); font-weight: 800; letter-spacing: .14em; }
+
+  .costume { padding: 18px 18px 8px; border-top: 2px solid var(--accent); background: rgba(0,0,0,.76); backdrop-filter: blur(4px); border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .crow { margin-bottom: 18px; }
+  .crow label { display: block; font-size: 10px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; }
+  .sws { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sw { width: 26px; height: 26px; padding: 0; border: 0; outline: 1px solid #383838; cursor: pointer; background: none; }
+  .sw:hover { outline-color: #999; }
+  .sw.on { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input.sw[type="color"] { -webkit-appearance: none; appearance: none; outline: 1px dashed #777; }
+  input.sw[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  input.sw[type="color"]::-webkit-color-swatch { border: 0; }
+  input.sw[type="color"]::-moz-color-swatch { border: 0; }
+  #randomize { width: 100%; margin-bottom: 14px; padding: 10px; background: transparent; color: var(--fg); border: 1px solid var(--line); font-size: 11px; letter-spacing: .16em; cursor: pointer; text-transform: uppercase; }
+  #randomize:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 960px) {
+    body[data-state="lobby"] #screen-lobby { pointer-events: auto; overflow-y: auto; display: flex; flex-direction: column; gap: 26px; padding: 26px 20px 30px; background: rgba(0,0,0,.86); }
+    #screen-lobby::before { display: none; }
+    .lobby-head, .lobby-col { position: static; transform: none; width: 100% !important; }
   }
-  #play:hover:not(:disabled) { background: #000; color: var(--accent); }
-  #play:disabled { opacity: .5; cursor: wait; }
 
-  /* ---------- HUD ---------- */
+  /* ============ HUD ============ */
   #hud { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; }
-  body.playing #hud { display: block; }
-  body.playing #login { display: none; }
-  #hud > * { pointer-events: auto; }
+  body[data-state="playing"] #hud { display: block; }
 
-  .panel { background: rgba(0,0,0,.74); border: 1px solid var(--line); backdrop-filter: blur(4px); }
+  #topbar { position: absolute; left: 16px; top: 16px; display: flex; gap: 8px; }
+  .ibtn { position: relative; width: 46px; height: 46px; display: grid; place-items: center; cursor: pointer; pointer-events: auto;
+    background: rgba(0,0,0,.74); border: 1px solid var(--line); color: var(--fg); backdrop-filter: blur(4px); transition: border-color .15s, color .15s, background .15s; }
+  .ibtn:hover { border-color: var(--accent); color: var(--accent); }
+  .ibtn.on { background: var(--accent); border-color: var(--accent); color: #000; }
+  .ibtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #badge { position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 4px; display: grid; place-items: center;
+    background: var(--accent); color: #000; font: 800 10px var(--mono); }
 
-  #players { position: absolute; top: 16px; right: 16px; min-width: 190px; max-width: 240px; border-top: 2px solid var(--accent); padding: 10px 12px 8px; font-size: 12px; }
-  #players h3 { font-size: 10px; letter-spacing: .14em; color: var(--dim); font-weight: 700; margin-bottom: 8px; }
-  #players h3 span { color: var(--accent); }
-  #roster { list-style: none; max-height: 40vh; overflow: auto; }
-  #roster li { display: flex; align-items: center; gap: 8px; padding: 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #roster i { flex: none; width: 8px; height: 8px; }
-  #roster li.me { color: var(--accent); font-weight: 700; }
-
-  #chat { position: absolute; left: 16px; bottom: 16px; width: min(430px, calc(100vw - 32px)); border-left: 2px solid var(--accent); opacity: .72; transition: opacity .2s; }
-  #chat:focus-within { opacity: 1; }
-  #log { height: 150px; overflow-y: auto; padding: 10px 12px; font-size: 12px; line-height: 1.55; scrollbar-width: none; }
+  #chat { position: absolute; left: 16px; top: 72px; width: min(400px, calc(100vw - 32px)); border-left: 2px solid var(--accent); pointer-events: auto; animation: rise .25s both; }
+  #log { height: 160px; overflow-y: auto; padding: 10px 12px; font-size: 12px; line-height: 1.55; scrollbar-width: none; }
   #log::-webkit-scrollbar { display: none; }
   #log .msg { word-break: break-word; }
   #log .msg b { font-weight: 800; }
   #log .sys { color: var(--dim); }
   #log .sys::before { content: '» '; color: var(--accent); }
-  #chat .row { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding: 0 12px; }
-  #chat .row span { color: var(--accent); font-weight: 800; }
-  #msg { flex: 1; background: transparent; border: 0; outline: none; color: var(--fg); font: 12px var(--mono); padding: 11px 0; }
+  #chatForm { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding: 0 6px 0 12px; }
+  #chatForm > span { color: var(--accent); font-weight: 800; }
+  #msg { flex: 1; background: transparent; border: 0; outline: none; color: var(--fg); font: 12px var(--mono); padding: 12px 0; }
   #msg::placeholder { color: #4a4a4a; }
+  #chatForm button { width: 32px; height: 32px; display: grid; place-items: center; background: none; border: 0; color: var(--accent); cursor: pointer; }
+  #chatForm button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-  #help { position: absolute; right: 16px; bottom: 16px; max-width: 330px; text-align: right; font-size: 10px; line-height: 1.8; letter-spacing: .06em; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
+  #players { position: absolute; top: 16px; right: 16px; min-width: 190px; max-width: 240px; border-top: 2px solid var(--accent); padding: 10px 12px 8px; font-size: 12px; pointer-events: auto; }
+  #players h3 { font-size: 10px; letter-spacing: .14em; color: var(--dim); font-weight: 700; margin-bottom: 8px; }
+  #players h3 span { color: var(--accent); }
+  #roster { list-style: none; max-height: 40vh; overflow: auto; }
+  #roster li { display: flex; align-items: center; gap: 8px; padding: 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #roster i { flex: none; width: 9px; height: 9px; outline: 1px solid rgba(255,255,255,.35); }
+  #roster li.me { color: var(--accent); font-weight: 700; }
+
+  #help { position: absolute; right: 16px; bottom: 16px; max-width: 330px; text-align: right; font-size: 10px; line-height: 1.8; letter-spacing: .06em; color: rgba(255,255,255,.88); text-shadow: 0 1px 3px rgba(0,0,0,.85); }
   #help b { color: var(--accent); }
 
-  #offline { display: none; position: fixed; inset: 0; z-index: 20; place-items: center; background: rgba(0,0,0,.92); font-size: 13px; letter-spacing: .1em; text-align: center; line-height: 2; }
+  #toast { position: absolute; top: 24px; left: 50%; transform: translate(-50%, -8px); padding: 11px 20px; background: rgba(0,0,0,.85); border: 1px solid var(--accent);
+    font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; opacity: 0; transition: opacity .25s, transform .25s; white-space: nowrap; }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ============ MENU ============ */
+  #menu { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(0,0,0,.66); backdrop-filter: blur(5px); }
+  #menu .card { width: min(360px, calc(100vw - 40px)); padding: 26px 26px 24px; background: #050505; border: 1px solid var(--line); border-top: 2px solid var(--accent); animation: rise .25s both; }
+  #menu .eyebrow { font-size: 10px; letter-spacing: .2em; color: var(--accent); font-weight: 800; }
+  #menu h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 6px 0 4px; }
+  #menu p { font-size: 11px; color: var(--dim); margin-bottom: 24px; }
+  #menu p b { color: var(--fg); }
+  #menu .actions { display: flex; flex-direction: column; gap: 10px; }
+  .abtn { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; font: 800 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; transition: background .15s, color .15s, border-color .15s; }
+  .abtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .abtn.primary { background: var(--accent); color: #000; border: 2px solid var(--accent); }
+  .abtn.primary:hover { background: #000; color: var(--accent); }
+  .abtn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line); }
+  .abtn.ghost:hover { border-color: #e5484d; color: #e5484d; }
+
+  #offline { display: none; position: fixed; inset: 0; z-index: 30; place-items: center; background: rgba(0,0,0,.92); font-size: 13px; letter-spacing: .1em; text-align: center; line-height: 2; }
   body.offline #offline { display: grid; }
   #offline b { color: var(--accent); }
 
-  @media (max-width: 640px) { .logo { font-size: 64px; } #help { display: none; } #players { display: none; } }
+  @media (max-width: 640px) { .logo { font-size: 64px; } #help, #players { display: none; } }
 </style>
 </head>
-<body>
+<body data-state="login">
 
 <canvas id="game"></canvas>
 
-<div id="login">
+<!-- ========== 1. LOGIN (nama guest) ========== -->
+<div id="screen-login" class="screen">
   <form id="loginForm" autocomplete="off">
     <div class="logo">BL<span class="o">O</span>X</div>
     <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
     <div>
-      <label class="field" for="name">Nama pemain</label>
+      <label class="field" for="name">Nama guest kamu</label>
       <input id="name" maxlength="16" placeholder="guest" spellcheck="false" autofocus>
+      <div class="hint">kosongkan untuk nama acak</div>
     </div>
-    <button id="play" type="submit"><span>Main</span><span>&rarr;</span></button>
+    <button class="btn-main" type="submit"><span>Lanjut</span><span>&rarr;</span></button>
   </form>
 </div>
 
+<!-- ========== 2. LOBBY (pilih game + kostum) ========== -->
+<div id="screen-lobby" class="screen">
+  <div class="lobby-head">
+    <div class="hello">Halo,<b id="hello"></b><span class="guest">GUEST</span></div>
+    <button id="rename" type="button">ganti nama</button>
+  </div>
+
+  <section class="lobby-col left">
+    <h2>Pilih game <b>&middot; 2</b></h2>
+    <div id="games"></div>
+  </section>
+
+  <section class="lobby-col right">
+    <h2>Kostum karakter</h2>
+    <div class="costume">
+      <button id="randomize" type="button">Acak warna</button>
+      <div class="crow"><label>Baju</label><div class="sws" id="sw-shirt"></div></div>
+      <div class="crow"><label>Celana</label><div class="sws" id="sw-pants"></div></div>
+      <div class="crow"><label>Kulit</label><div class="sws" id="sw-skin"></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ========== 3. HUD (saat main) ========== -->
 <div id="hud">
+  <div id="topbar">
+    <button id="btnChat" class="ibtn" type="button" title="Chat" aria-label="Chat">
+      <svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H10l-4.5 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13h5"/></svg>
+      <span id="badge" hidden>0</span>
+    </button>
+    <button id="btnMenu" class="ibtn" type="button" title="Menu (Esc)" aria-label="Menu">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+
+  <div id="chat" class="panel" hidden>
+    <div id="log"></div>
+    <form id="chatForm" autocomplete="off">
+      <span>&rsaquo;</span>
+      <input id="msg" maxlength="120" placeholder="ketik pesan, Enter untuk kirim" spellcheck="false" autocomplete="off">
+      <button type="submit" title="Kirim" aria-label="Kirim"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </form>
+  </div>
+
   <div id="players" class="panel">
     <h3>PEMAIN <span id="count">0</span></h3>
     <ul id="roster"></ul>
   </div>
-  <div id="chat" class="panel">
-    <div id="log"></div>
-    <div class="row"><span>&rsaquo;</span><input id="msg" maxlength="120" placeholder="tekan Enter untuk chat" spellcheck="false" autocomplete="off"></div>
-  </div>
+
   <div id="help">
     <b>WASD</b> / <b>PANAH</b> gerak &nbsp;&middot;&nbsp; <b>SPASI</b> lompat<br>
-    <b>DRAG</b> putar kamera &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom &nbsp;&middot;&nbsp; <b>ENTER</b> chat
+    <b>DRAG</b> putar kamera &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom &nbsp;&middot;&nbsp; <b>ESC</b> menu
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<!-- ========== MENU (Lanjut / Keluar) ========== -->
+<div id="menu" hidden>
+  <div class="card">
+    <div class="eyebrow">MENU</div>
+    <h2 id="menuGame">Baseplate</h2>
+    <p>bermain sebagai <b id="menuName"></b></p>
+    <div class="actions">
+      <button id="btnResume" class="abtn primary" type="button"><span>Lanjut</span><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg></button>
+      <button id="btnExit" class="abtn ghost" type="button"><span>Keluar dari game</span><svg viewBox="0 0 24 24"><path d="M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5M15 8l4 4-4 4M19 12H9"/></svg></button>
+    </div>
   </div>
 </div>
 
 <div id="offline"><div>KONEKSI <b>TERPUTUS</b><br>muat ulang halaman (F5) untuk main lagi</div></div>
 
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 (() => {
   'use strict';
@@ -142,15 +278,10 @@
   const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
 
   const $ = (id) => document.getElementById(id);
-  const socket = io({
-    path: '/api/socket-io/socket.io',
-    transports: ['websocket'],
-    upgrade: false,
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    reconnectionDelay: 500,
-    reconnectionDelayMax: 5000,
-  });
+  const V3 = BABYLON.Vector3;
+  const rnd = (r) => (Math.random() - 0.5) * 2 * r;
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const socket = io();
 
   // ============================================================
   //  ENGINE, SCENE, KAMERA
@@ -158,10 +289,7 @@
   const canvas = $('game');
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color4(0.56, 0.79, 1, 1);
   scene.collisionsEnabled = true;
-
-  const V3 = BABYLON.Vector3;
 
   const hemi = new BABYLON.HemisphericLight('hemi', new V3(0.2, 1, 0.1), scene);
   hemi.intensity = 0.85;
@@ -169,9 +297,9 @@
   const sun = new BABYLON.DirectionalLight('sun', new V3(-0.4, -1, -0.3), scene);
   sun.intensity = 0.5;
 
-  const camera = new BABYLON.ArcRotateCamera('cam', -Math.PI / 2, 1.1, 70, new V3(0, 4, 0), scene);
+  const camera = new BABYLON.ArcRotateCamera('cam', -Math.PI / 2, 1.1, 30, new V3(0, 4, 0), scene);
   camera.minZ = 0.5;
-  camera.maxZ = 1200;
+  camera.maxZ = 1500;
   camera.lowerRadiusLimit = 8;
   camera.upperRadiusLimit = 70;
   camera.lowerBetaLimit = 0.2;
@@ -183,61 +311,29 @@
   camera.attachControl(canvas, true);
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
+  function applySky(g) {
+    const [r, gg, b] = g.sky;
+    scene.clearColor = new BABYLON.Color4(r, gg, b, 1);
+    scene.fogMode = g.fog ? BABYLON.Scene.FOGMODE_EXP2 : BABYLON.Scene.FOGMODE_NONE;
+    scene.fogColor = new BABYLON.Color3(r, gg, b);
+    scene.fogDensity = 0.004;
+  }
+
   // ============================================================
-  //  DUNIA: baseplate + beberapa balok buat lompat-lompat
+  //  MATERIAL & TEKS 3D
   // ============================================================
   const matCache = {};
-  function mat(hex) {
-    if (!matCache[hex]) {
-      const m = new BABYLON.StandardMaterial('m' + hex, scene);
-      m.diffuseColor = BABYLON.Color3.FromHexString(hex);
-      m.specularColor = BABYLON.Color3.Black();
-      matCache[hex] = m;
-    }
+  function mat(hex) {                             // material dipakai bersama -> JANGAN di-dispose
+    if (!matCache[hex]) matCache[hex] = newMat(hex);
     return matCache[hex];
   }
-
-  // tekstur baseplate digambar pakai canvas — tanpa file gambar
-  const gt = new BABYLON.DynamicTexture('groundTex', 256, scene, true);
-  const gc = gt.getContext();
-  gc.fillStyle = '#9aa0a8'; gc.fillRect(0, 0, 256, 256);
-  gc.strokeStyle = '#838992'; gc.lineWidth = 6; gc.strokeRect(0, 0, 256, 256);
-  gc.fillStyle = '#8b919a';
-  for (const [sx, sy] of [[64, 64], [192, 64], [64, 192], [192, 192]]) { gc.beginPath(); gc.arc(sx, sy, 10, 0, Math.PI * 2); gc.fill(); }
-  gt.update();
-  gt.wrapU = gt.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-  gt.uScale = gt.vScale = 25;                    // 200 stud / 8 stud per ubin
-
-  const groundMat = new BABYLON.StandardMaterial('groundMat', scene);
-  groundMat.diffuseTexture = gt;
-  groundMat.specularColor = BABYLON.Color3.Black();
-  const ground = BABYLON.MeshBuilder.CreateBox('ground', { width: 200, height: 4, depth: 200 }, scene);
-  ground.position.y = -2;                        // permukaan atas = y 0
-  ground.material = groundMat;
-  ground.checkCollisions = true;
-
-  function block(x, y, z, w, h, d, hex) {         // y = titik tengah
-    const b = BABYLON.MeshBuilder.CreateBox('block', { width: w, height: h, depth: d }, scene);
-    b.position.set(x, y, z);
-    b.material = mat(hex);
-    b.checkCollisions = true;
-    return b;
+  function newMat(hex) {
+    const m = new BABYLON.StandardMaterial('m' + hex, scene);
+    m.diffuseColor = BABYLON.Color3.FromHexString(hex);
+    m.specularColor = BABYLON.Color3.Black();
+    return m;
   }
 
-  // tangga raksasa
-  const stairColors = ['#ff9a3d', '#ff8420', '#ff6a00', '#e85a00', '#c94b00'];
-  stairColors.forEach((c, i) => block(0, (i + 1), 24 + i * 8, 12, 2 * (i + 1), 8, c));
-  // balok & platform melayang (mini obby)
-  block(-22, 1.5, 8, 10, 3, 10, '#3498db');
-  block(-30, 2.5, -6, 8, 5, 8, '#9b59b6');
-  block(22, 1, -14, 12, 2, 12, '#2ecc71');
-  block(30, 3, -30, 8, 1, 8, '#f1c40f');
-  block(18, 6, -30, 8, 1, 8, '#e74c3c');
-  block(6, 9, -30, 8, 1, 8, '#ff6a00');
-
-  // ============================================================
-  //  TEKS 3D (nametag & bubble chat) — digambar ke DynamicTexture
-  // ============================================================
   function roundRect(c, x, y, w, h, r) {
     c.beginPath();
     c.moveTo(x + r, y);
@@ -248,6 +344,7 @@
     c.closePath();
   }
 
+  // nametag & bubble chat digambar ke DynamicTexture
   function textPlane(lines, o) {
     const { W, H, w, h, px, bg, fg } = o;
     const tex = new BABYLON.DynamicTexture('txt', { width: W, height: H }, scene, true);
@@ -286,7 +383,7 @@
   }
 
   // ============================================================
-  //  AVATAR bergaya Roblox R6: kepala, badan, 2 tangan, 2 kaki
+  //  AVATAR bergaya Roblox R6 — warna dari kostum {shirt, pants, skin}
   //  (titik tengah = tengah badan, tinggi total 5 stud)
   // ============================================================
   let faceMat = null;
@@ -308,53 +405,183 @@
     return faceMat;
   }
 
-  function buildAvatar(torsoColor) {
+  // unique=true -> material milik avatar itu sendiri (dipakai preview lobby supaya warnanya bisa diubah langsung)
+  function buildAvatar(c, unique = false) {
+    const make = unique ? newMat : mat;
+    const mats = { shirt: make(c.shirt), pants: make(c.pants), skin: make(c.skin) };
     const root = new BABYLON.TransformNode('avatar', scene);
-    const part = (w, h, d, hex, x, y, z) => {
+
+    const part = (w, h, d, material, x, y, z) => {
       const m = BABYLON.MeshBuilder.CreateBox('part', { width: w, height: h, depth: d }, scene);
-      m.material = mat(hex);
+      m.material = material;
       m.parent = root;
       m.position.set(x, y, z);
       m.isPickable = false;
       return m;
     };
     // anggota badan berputar dari sendi (pivot di atas), jadi bisa diayun
-    const limb = (w, h, d, hex, x, y, z) => {
+    const limb = (w, h, d, material, x, y, z) => {
       const pivot = new BABYLON.TransformNode('pivot', scene);
       pivot.parent = root;
       pivot.position.set(x, y, z);
       const m = BABYLON.MeshBuilder.CreateBox('limb', { width: w, height: h, depth: d }, scene);
-      m.material = mat(hex);
+      m.material = material;
       m.parent = pivot;
       m.position.y = -h / 2;
       m.isPickable = false;
       return pivot;
     };
 
-    const SKIN = '#f6d55c', PANTS = '#3b5b92';
-    part(2, 2, 1, torsoColor, 0, 0.5, 0);                    // badan
-    const head = part(1.4, 1.2, 1.2, SKIN, 0, 2.1, 0);       // kepala
+    part(2, 2, 1, mats.shirt, 0, 0.5, 0);                     // badan
+    const head = part(1.4, 1.2, 1.2, mats.skin, 0, 2.1, 0);   // kepala
     const face = BABYLON.MeshBuilder.CreatePlane('face', { width: 1.0, height: 0.9 }, scene);
     face.material = getFaceMat();
     face.parent = head;
     face.position.set(0, -0.02, 0.63);
-    face.rotation.y = Math.PI;                                // hadap ke +Z (depan)
+    face.rotation.y = Math.PI;                                 // hadap ke +Z (depan)
     face.isPickable = false;
 
     return {
-      root,
-      legL: limb(1, 2, 1, PANTS, -0.5, -0.5, 0),
-      legR: limb(1, 2, 1, PANTS, 0.5, -0.5, 0),
-      armL: limb(1, 2, 1, SKIN, -1.5, 1.5, 0),
-      armR: limb(1, 2, 1, SKIN, 1.5, 1.5, 0),
+      root, mats, unique,
+      legL: limb(1, 2, 1, mats.pants, -0.5, -0.5, 0),
+      legR: limb(1, 2, 1, mats.pants, 0.5, -0.5, 0),
+      armL: limb(1, 2, 1, mats.skin, -1.5, 1.5, 0),
+      armR: limb(1, 2, 1, mats.skin, 1.5, 1.5, 0),
     };
   }
+
+  // ============================================================
+  //  DUNIA — semua mesh dunia dicatat supaya bisa dibuang saat ganti game
+  // ============================================================
+  let worldMeshes = [];
+  const track = (m) => { worldMeshes.push(m); return m; };
+  function clearWorld() { worldMeshes.forEach((m) => m.dispose()); worldMeshes = []; }
+
+  // tekstur baseplate digambar pakai canvas — tanpa file gambar
+  const gt = new BABYLON.DynamicTexture('groundTex', 256, scene, true);
+  const gc = gt.getContext();
+  gc.fillStyle = '#9aa0a8'; gc.fillRect(0, 0, 256, 256);
+  gc.strokeStyle = '#838992'; gc.lineWidth = 6; gc.strokeRect(0, 0, 256, 256);
+  gc.fillStyle = '#8b919a';
+  for (const [sx, sy] of [[64, 64], [192, 64], [64, 192], [192, 192]]) { gc.beginPath(); gc.arc(sx, sy, 10, 0, Math.PI * 2); gc.fill(); }
+  gt.update();
+  gt.wrapU = gt.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+  gt.uScale = gt.vScale = 25;                    // 200 stud / 8 stud per ubin
+  const groundMat = new BABYLON.StandardMaterial('groundMat', scene);
+  groundMat.diffuseTexture = gt;
+  groundMat.specularColor = BABYLON.Color3.Black();
+
+  function makeGround() {
+    const g = track(BABYLON.MeshBuilder.CreateBox('ground', { width: 200, height: 4, depth: 200 }, scene));
+    g.position.y = -2;                           // permukaan atas = y 0
+    g.material = groundMat;
+    g.checkCollisions = true;
+  }
+
+  function block(x, y, z, w, h, d, hex) {         // y = titik tengah
+    const b = track(BABYLON.MeshBuilder.CreateBox('block', { width: w, height: h, depth: d }, scene));
+    b.position.set(x, y, z);
+    b.material = mat(hex);
+    b.checkCollisions = true;
+    return b;
+  }
+
+  // ---------- GAME 1: BASEPLATE ----------
+  function buildBaseplate() {
+    makeGround();
+    // tangga raksasa (anak tangga 2 stud otomatis terpanjat)
+    ['#ff9a3d', '#ff8420', '#ff6a00', '#e85a00', '#c94b00'].forEach((c, i) => block(0, i + 1, 24 + i * 8, 12, 2 * (i + 1), 8, c));
+    // balok & platform melayang (mini obby)
+    block(-22, 1.5, 8, 10, 3, 10, '#3498db');
+    block(-30, 2.5, -6, 8, 5, 8, '#9b59b6');
+    block(22, 1, -14, 12, 2, 12, '#2ecc71');
+    block(30, 3, -30, 8, 1, 8, '#f1c40f');
+    block(18, 6, -30, 8, 1, 8, '#e74c3c');
+    block(6, 9, -30, 8, 1, 8, '#ff6a00');
+    return {
+      respawn: () => ({ x: rnd(6), y: 8, z: rnd(6) }),
+      tick() {},
+    };
+  }
+
+  // ---------- GAME 2: SKY OBBY ----------
+  // 3 stage platform di langit. Tiap stage diakhiri pad checkpoint (oranye), pad terakhir = finish (emas).
+  function buildObby() {
+    const cps = [];                                            // daftar pad: start, checkpoint..., finish
+    const t0 = performance.now();
+    let cp = 0;
+
+    const plat = (x, top, z, w, d, hex) => block(x, top - 0.5, z, w, 1, d, hex);   // top = permukaan atas
+    const flag = (x, top, z, hex) => {
+      const pole = track(BABYLON.MeshBuilder.CreateBox('pole', { width: 0.4, height: 6, depth: 0.4 }, scene));
+      pole.position.set(x, top + 3, z);
+      pole.material = mat('#dddddd');
+      const banner = track(BABYLON.MeshBuilder.CreateBox('banner', { width: 2.6, height: 1.5, depth: 0.2 }, scene));
+      banner.position.set(x + 1.5, top + 5.2, z);
+      banner.material = mat(hex);
+    };
+
+    block(0, -1, 0, 24, 2, 24, '#ff9a3d');                     // platform awal (permukaan y=0)
+    cps.push({ x: 0, z: 0, top: 0, w: 24, d: 24 });
+
+    const stages = [
+      { count: 5, size: 8, gap: 5,   rise: 1,   sway: 6, color: '#3498db' },
+      { count: 6, size: 7, gap: 5,   rise: 2,   sway: 9, color: '#9b59b6' },
+      { count: 6, size: 5, gap: 5.5, rise: 1.5, sway: 8, color: '#e74c3c' },
+    ];
+    let z = 12, top = 0;                                       // z = tepi depan platform sebelumnya
+    stages.forEach((s, si) => {
+      for (let i = 0; i < s.count; i++) {
+        z += s.gap + s.size / 2;
+        top += s.rise;
+        plat((i % 2 ? 1 : -1) * s.sway / 2, top, z, s.size, s.size, s.color);   // zig-zag kiri-kanan
+        z += s.size / 2;
+      }
+      const last = si === stages.length - 1;
+      const size = last ? 14 : 10;
+      z += 5 + size / 2;
+      const color = last ? '#f1c40f' : '#ff6a00';
+      plat(0, top, z, size, size, color);
+      flag(0, top, z, last ? '#ffffff' : '#ff6a00');
+      cps.push({ x: 0, z, top, w: size, d: size, finish: last });
+      z += size / 2;
+    });
+
+    const fmt = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
+    return {
+      intro: 'capai bendera emas di ujung!',
+      respawn() {
+        showToast(cp ? 'kembali ke checkpoint' : 'ulang dari awal');
+        const c = cps[cp];
+        return cp === 0 ? { x: rnd(6), y: 4, z: rnd(6) } : { x: c.x, y: c.top + 3.5, z: c.z };
+      },
+      tick(p, isGrounded) {                                    // dipanggil tiap frame; deteksi pad checkpoint
+        if (!isGrounded) return;
+        const feet = p.y - 2.5;
+        for (let i = cp + 1; i < cps.length; i++) {
+          const c = cps[i];
+          if (Math.abs(p.x - c.x) < c.w / 2 && Math.abs(p.z - c.z) < c.d / 2 && Math.abs(feet - c.top) < 1.5) {
+            cp = i;
+            showToast(c.finish ? 'SELESAI · ' + fmt(performance.now() - t0) : `CHECKPOINT ${i}/${cps.length - 2}`, c.finish ? 4500 : 2200);
+          }
+        }
+      },
+    };
+  }
+
+  const GAMES = {
+    baseplate: { name: 'Baseplate', tag: 'santai', desc: 'Dunia terbuka untuk nongkrong bareng. Ada tangga raksasa dan platform melayang untuk lompat-lompat.',
+      sky: [0.56, 0.79, 1], fog: false, voidY: -60, build: buildBaseplate },
+    obby: { name: 'Sky Obby', tag: 'tantangan', desc: 'Lompati platform di langit lewat 3 stage. Jatuh? Kamu kembali ke checkpoint terakhir.',
+      sky: [0.17, 0.16, 0.38], fog: true, voidY: -40, build: buildObby },
+  };
 
   // ============================================================
   //  ENTITAS PEMAIN (lokal & remote)
   // ============================================================
   const others = {};      // id -> entitas pemain lain
-  const roster = {};      // id -> {name, color} untuk daftar pemain
+  const roster = {};      // id -> info pemain (untuk daftar pemain)
   let me = null;          // entitas kita sendiri
   let myId = null;
 
@@ -370,7 +597,7 @@
     }
     root.position.set(info.x, info.y, info.z);
 
-    const av = buildAvatar(info.color);
+    const av = buildAvatar(info);
     av.root.parent = root;
     av.root.rotation.y = info.ry || 0;
 
@@ -427,39 +654,190 @@
   }
 
   // ============================================================
-  //  INPUT
+  //  STATE: login -> lobby -> playing
   // ============================================================
-  const keys = new Set();
-  const down = (...codes) => codes.some((c) => keys.has(c));
-  const msgInput = $('msg');
+  let state = 'login';
+  function setState(s) { state = s; document.body.dataset.state = s; }
 
-  window.addEventListener('keydown', (e) => {
-    if (!me) return;
-    if (e.code === 'Enter') { e.preventDefault(); msgInput.focus(); return; }
-    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
-    keys.add(e.code);
-  });
-  window.addEventListener('keyup', (e) => keys.delete(e.code));
-  window.addEventListener('blur', () => keys.clear());
+  let playerName = '';
+  let activeGame = null;      // definisi game yang sedang dimainkan
+  let activeApi = null;       // { respawn, tick } dari game itu
+  let joining = false;
 
-  msgInput.addEventListener('focus', () => keys.clear());
-  msgInput.addEventListener('keydown', (e) => {
-    e.stopPropagation();                       // ketikan chat tidak menggerakkan karakter
-    if (e.key === 'Enter') {
-      const text = msgInput.value.trim();
-      if (text) socket.emit('chat', text);
-      msgInput.value = '';
-      msgInput.blur();
-    } else if (e.key === 'Escape') {
-      msgInput.value = '';
-      msgInput.blur();
+  // ---------- kostum ----------
+  const DEFAULT_COSTUME = { shirt: '#ff6a00', pants: '#3b5b92', skin: '#f6d55c' };
+  const PALETTES = {
+    shirt: ['#ff6a00', '#e74c3c', '#ff5fa2', '#f1c40f', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6', '#ecf0f1', '#2c2c2c'],
+    pants: ['#3b5b92', '#2c2c2c', '#6b4423', '#1f7a4d', '#7d3c98', '#c0392b', '#f39c12', '#ecf0f1'],
+    skin:  ['#f6d55c', '#f3c9a0', '#e0ac69', '#c68642', '#8d5524', '#5c3a21', '#a3d9a5', '#9fd3f5'],
+  };
+  const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
+  const costume = { ...DEFAULT_COSTUME };
+  try {
+    const saved = JSON.parse(localStorage.getItem('blox-costume') || '{}');
+    for (const k in costume) if (isHex(saved[k])) costume[k] = saved[k].toLowerCase();
+  } catch (_) {}
+
+  let preview = null;         // avatar contoh di lobby (material sendiri, warna diubah langsung)
+  function ensurePreview() {
+    if (preview) return;
+    preview = buildAvatar(costume, true);
+    preview.root.position.set(0, 2.5, 0);
+  }
+  function disposePreview() {
+    if (!preview) return;
+    preview.root.dispose();
+    Object.values(preview.mats).forEach((m) => m.dispose());
+    preview = null;
+  }
+
+  function setColor(part, hex) {
+    costume[part] = hex;
+    try { localStorage.setItem('blox-costume', JSON.stringify(costume)); } catch (_) {}
+    if (preview) preview.mats[part].diffuseColor = BABYLON.Color3.FromHexString(hex);
+    refreshSwatches();
+  }
+
+  function buildCostumeUI() {
+    for (const part in PALETTES) {
+      const box = $('sw-' + part);
+      PALETTES[part].forEach((hex) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sw';
+        b.style.background = hex;
+        b.dataset.hex = hex;
+        b.title = hex;
+        b.setAttribute('aria-label', part + ' ' + hex);
+        b.addEventListener('click', () => setColor(part, hex));
+        box.append(b);
+      });
+      const custom = document.createElement('input');          // warna bebas
+      custom.type = 'color';
+      custom.className = 'sw custom';
+      custom.title = 'warna bebas';
+      custom.addEventListener('input', () => setColor(part, custom.value));
+      box.append(custom);
     }
+    $('randomize').addEventListener('click', () => { for (const part in PALETTES) setColor(part, pick(PALETTES[part])); });
+    refreshSwatches();
+  }
+  function refreshSwatches() {
+    for (const part in PALETTES) {
+      const box = $('sw-' + part);
+      box.querySelectorAll('button.sw').forEach((b) => b.classList.toggle('on', b.dataset.hex === costume[part]));
+      const custom = box.querySelector('input.sw');
+      custom.value = costume[part];
+      custom.classList.toggle('on', !PALETTES[part].includes(costume[part]));
+    }
+  }
+
+  // ---------- kartu game ----------
+  function buildGameCards() {
+    const box = $('games');
+    for (const id in GAMES) {
+      const g = GAMES[id];
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'game';
+      b.innerHTML =
+        `<div class="thumb ${id}"></div>` +
+        `<div class="info"><div class="title"><span>${g.name}</span><em>${g.tag}</em></div>` +
+        `<p>${g.desc}</p>` +
+        `<div class="foot"><span class="cnt"><i></i><b data-count="${id}">0</b> online</span><span class="go">MAIN &rarr;</span></div></div>`;
+      b.addEventListener('click', () => joinGame(id));
+      box.append(b);
+    }
+  }
+
+  function enterLobby() {
+    clearWorld();
+    applySky(GAMES.baseplate);
+    makeGround();
+    camera.setTarget(new V3(0, 3.2, 0));            // (melepas kunci kamera dari pemain, kalau ada)
+    camera.alpha = Math.PI / 2 + 0.4;               // kamera menghadap wajah avatar
+    camera.beta = 1.38;
+    camera.radius = 15;
+    ensurePreview();
+  }
+
+  // ---------- login ----------
+  const nameInput = $('name');
+  try { nameInput.value = localStorage.getItem('blox-name') || ''; } catch (_) {}
+
+  $('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    playerName = nameInput.value.replace(/[\u0000-\u001f]/g, '').trim().slice(0, 16) || 'Guest' + Math.floor(1000 + Math.random() * 9000);
+    try { localStorage.setItem('blox-name', nameInput.value.trim()); } catch (_) {}
+    $('hello').textContent = playerName;
+    setState('lobby');
   });
+  $('rename').addEventListener('click', () => { setState('login'); nameInput.focus(); nameInput.select(); });
+
+  function joinGame(id) {
+    if (joining || state !== 'lobby') return;
+    joining = true;
+    document.body.classList.add('joining');
+    socket.emit('join', { name: playerName, game: id, costume });
+  }
 
   // ============================================================
-  //  UI: chat & daftar pemain
+  //  HUD: chat (tombol), menu (tombol), daftar pemain, toast
   // ============================================================
   const log = $('log');
+  const msgInput = $('msg');
+  let chatOpen = false, menuOpen = false, unread = 0;
+
+  function updateBadge() {
+    $('badge').hidden = unread === 0;
+    $('badge').textContent = unread > 9 ? '9+' : String(unread);
+  }
+  function setChat(open) {
+    chatOpen = open;
+    $('chat').hidden = !open;
+    $('btnChat').classList.toggle('on', open);
+    if (open) { unread = 0; updateBadge(); log.scrollTop = log.scrollHeight; msgInput.focus(); }
+    else msgInput.blur();
+  }
+  function setMenu(open) {
+    menuOpen = open;
+    $('menu').hidden = !open;
+    keys.clear();
+    if (open) msgInput.blur();
+  }
+
+  $('btnChat').addEventListener('click', (e) => { e.currentTarget.blur(); setChat(!chatOpen); });
+  $('btnMenu').addEventListener('click', (e) => { e.currentTarget.blur(); setMenu(true); });
+  $('btnResume').addEventListener('click', () => setMenu(false));
+  $('btnExit').addEventListener('click', leaveGame);
+
+  $('chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (text) socket.emit('chat', text);
+    msgInput.value = '';
+    msgInput.blur();                                  // lepas fokus supaya WASD bisa dipakai lagi; panel tetap terbuka
+  });
+
+  let toastTimer = 0;
+  function showToast(text, ms = 2500) {
+    const t = $('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  // warna nama yang terlalu gelap dicerahkan supaya terbaca di panel hitam
+  function readable(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.45) {
+      r = Math.round(r + (255 - r) * 0.6); g = Math.round(g + (255 - g) * 0.6); b = Math.round(b + (255 - b) * 0.6);
+    }
+    return `rgb(${r},${g},${b})`;
+  }
+
   function addChat(m) {
     const row = document.createElement('div');
     row.className = 'msg' + (m.system ? ' sys' : '');
@@ -467,9 +845,9 @@
       row.textContent = m.text;
     } else {
       const n = document.createElement('b');
-      n.style.color = m.color;
+      n.style.color = readable(m.color);
       n.textContent = m.name + ': ';
-      row.append(n, m.text);                   // textContent-safe, tidak ada innerHTML
+      row.append(n, m.text);                          // textContent-safe, tidak ada innerHTML
     }
     log.append(row);
     while (log.children.length > 60) log.firstChild.remove();
@@ -484,7 +862,7 @@
     for (const id of ids) {
       const li = document.createElement('li');
       const dot = document.createElement('i');
-      dot.style.background = roster[id].color;
+      dot.style.background = roster[id].shirt;
       li.append(dot, roster[id].name);
       if (id === myId) li.classList.add('me');
       ul.append(li);
@@ -492,20 +870,47 @@
   }
 
   // ============================================================
-  //  LOGIN & NETWORKING
+  //  INPUT
   // ============================================================
-  const nameInput = $('name');
-  try { nameInput.value = localStorage.getItem('blox-name') || ''; } catch (_) {}
+  const keys = new Set();
+  const down = (...codes) => codes.some((c) => keys.has(c));
 
-  $('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    try { localStorage.setItem('blox-name', name); } catch (_) {}
-    $('play').disabled = true;
-    socket.emit('join', name);
+  window.addEventListener('keydown', (e) => {
+    if (state !== 'playing') return;
+    if (e.code === 'Escape') { setMenu(!menuOpen); return; }
+    if (menuOpen) return;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+    keys.add(e.code);
+  });
+  window.addEventListener('keyup', (e) => keys.delete(e.code));
+  window.addEventListener('blur', () => keys.clear());
+
+  msgInput.addEventListener('focus', () => keys.clear());
+  msgInput.addEventListener('keydown', (e) => {
+    e.stopPropagation();                              // ketikan chat tidak menggerakkan karakter
+    if (e.key === 'Escape') msgInput.blur();
+  });
+
+  // ============================================================
+  //  NETWORKING
+  // ============================================================
+  let vy = 0, grounded = false, lastSent = 0;
+  const last = { x: 1e9, y: 0, z: 0, ry: 0 };
+
+  socket.on('counts', (c) => {
+    for (const id in c) { const el = document.querySelector(`[data-count="${id}"]`); if (el) el.textContent = c[id]; }
   });
 
   socket.on('init', ({ me: info, players }) => {
+    joining = false;
+    document.body.classList.remove('joining');
+
+    clearWorld();                                     // buang dunia & avatar lobby
+    disposePreview();
+    activeGame = GAMES[info.game];
+    applySky(activeGame);
+    activeApi = activeGame.build();
+
     myId = info.id;
     for (const id in players) {
       roster[id] = players[id];
@@ -513,19 +918,25 @@
     }
     me = createEntity(info, true);
     vy = 0; grounded = false;
+    last.x = 1e9;
 
-    camera.alpha = -Math.PI / 2;               // kamera di belakang punggung
+    camera.alpha = -Math.PI / 2;                      // kamera di belakang punggung
     camera.beta = 1.15;
     camera.radius = 28;
-    camera.lockedTarget = me.root;             // kamera mengikuti kita
+    camera.lockedTarget = me.root;                    // kamera mengikuti kita
 
-    document.body.classList.add('playing');
+    log.replaceChildren();
+    unread = 0; updateBadge();
+    setChat(false); setMenu(false);
+    $('menuGame').textContent = activeGame.name;
+    $('menuName').textContent = playerName;
+    setState('playing');
     renderRoster();
-    addChat({ system: true, text: 'selamat datang! tekan Enter untuk ngobrol' });
+    if (activeApi.intro) showToast(activeApi.intro, 3500);
   });
 
   socket.on('player-joined', (p) => {
-    if (!myId || others[p.id]) return;
+    if (state !== 'playing' || others[p.id]) return;
     roster[p.id] = p;
     others[p.id] = createEntity(p, false);
     renderRoster();
@@ -539,7 +950,7 @@
   });
 
   socket.on('player-left', (id) => {
-    if (!myId) return;
+    if (state !== 'playing') return;
     removeEntity(others[id]);
     delete others[id];
     delete roster[id];
@@ -547,36 +958,45 @@
   });
 
   socket.on('chat', (m) => {
-    if (!myId) return;
+    if (state !== 'playing') return;
     addChat(m);
+    if (!m.system && m.id !== myId && !chatOpen) { unread++; updateBadge(); }
     if (m.id) {
       const e = m.id === myId ? me : others[m.id];
       if (e) say(e, m.text);
     }
   });
 
-  socket.on('connect', () => {
-    document.body.classList.remove('offline');
-  });
+  socket.on('disconnect', () => document.body.classList.add('offline'));
 
-  socket.on('connect_error', (err) => {
-    console.error('[socket.io] connect_error:', err.message);
-    document.body.classList.add('offline');
-    const offlineText = document.querySelector('#offline div');
-    if (offlineText) offlineText.innerHTML = 'KONEKSI <b>TERPUTUS</b><br>server realtime tidak tersedia';
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.warn('[socket.io] disconnected:', reason);
-    document.body.classList.add('offline');
-  });
+  // menu -> Keluar: balik ke lobby, koneksi tetap hidup
+  function leaveGame() {
+    if (state !== 'playing') return;
+    socket.emit('leave');
+    setMenu(false);
+    setChat(false);
+    camera.setTarget(new V3(0, 3.2, 0));              // lepas kunci kamera SEBELUM mesh pemain dibuang
+    for (const id of Object.keys(others)) { removeEntity(others[id]); delete others[id]; }
+    for (const id of Object.keys(roster)) delete roster[id];
+    removeEntity(me);
+    me = null; myId = null; activeGame = null; activeApi = null;
+    keys.clear();
+    clearTimeout(toastTimer); $('toast').classList.remove('show');
+    enterLobby();
+    setState('lobby');
+  }
 
   // ============================================================
   //  GAME LOOP
   // ============================================================
-  let vy = 0, grounded = false, lastSent = 0;
-  const last = { x: 1e9, y: 0, z: 0, ry: 0 };
   const r2 = (n) => Math.round(n * 100) / 100;
+
+  function respawn() {
+    const p = activeApi.respawn();
+    me.root.position.set(p.x, p.y, p.z);
+    vy = 0;
+    me.root.computeWorldMatrix(true);
+  }
 
   function updateLocal(dt, t) {
     // arah maju = arah kamera (diproyeksikan ke tanah)
@@ -606,7 +1026,8 @@
       if (vy > 0 && movedY < dy - 0.001) vy = 0;                            // kepala kejedot
     }
 
-    if (me.root.position.y < -60) { me.root.position.set(0, 8, 0); vy = 0; } // jatuh ke void -> respawn
+    if (me.root.position.y < activeGame.voidY) respawn();                   // jatuh ke void
+    activeApi.tick(me.root.position, grounded);
     me.root.computeWorldMatrix(true);                                       // biar kamera tidak telat 1 frame
     animate(me, walking && grounded, t);
 
@@ -625,7 +1046,8 @@
   function updateRemote(e, t) {
     const p = e.root.position;
     const flat = Math.hypot(e.target.x - p.x, e.target.z - p.z);
-    V3.LerpToRef(p, e.target, 0.25, p);                                     // halus antar update jaringan
+    if (V3.DistanceSquared(p, e.target) > 900) p.copyFrom(e.target);         // respawn/teleport -> langsung pindah
+    else V3.LerpToRef(p, e.target, 0.25, p);                                  // halus antar update jaringan
     e.avatar.rotation.y = lerpAngle(e.avatar.rotation.y, e.ry, 0.25);
     animate(e, flat > 0.1, t);
   }
@@ -633,11 +1055,18 @@
   scene.onBeforeRenderObservable.add(() => {
     const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
     const t = performance.now() / 1000;
-    if (!me) { camera.alpha += dt * 0.12; return; }   // di layar login: kamera berputar pelan
+    if (state !== 'playing' || !me) {                                         // login/lobby: avatar contoh menoleh pelan
+      if (preview) preview.root.rotation.y = Math.sin(t * 0.7) * 0.55;
+      return;
+    }
     updateLocal(dt, t);
     for (const id in others) updateRemote(others[id], t);
   });
 
+  // ---------- start ----------
+  buildGameCards();
+  buildCostumeUI();
+  enterLobby();                                                               // dunia lobby jadi latar layar login
   engine.runRenderLoop(() => scene.render());
   window.addEventListener('resize', () => engine.resize());
 })();
