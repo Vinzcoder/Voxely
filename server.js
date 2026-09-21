@@ -13,7 +13,12 @@ const { Server } = require('socket.io');
 const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// ALLOWED_ORIGIN dipakai kalau index.html di-host di domain lain (mis. Vercel), contoh:
+//   ALLOWED_ORIGIN=https://nama-kamu.vercel.app          (boleh beberapa, pisahkan dengan koma)
+// Kosong = semua origin boleh (cukup untuk belajar/dev).
+const ORIGINS = (process.env.ALLOWED_ORIGIN || '*').split(',').map((s) => s.trim()).filter(Boolean);
+const io = new Server(server, { cors: { origin: ORIGINS.includes('*') ? '*' : ORIGINS } });
 
 app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
@@ -26,6 +31,9 @@ const GAMES = {
 
 // id socket -> { id, name, game, shirt, pants, skin, x, y, z, ry }
 const players = {};
+
+// cek cepat "server hidup?" (dipakai hosting untuk health check) — buka /health di browser
+app.get('/health', (_req, res) => res.json({ ok: true, players: Object.keys(players).length }));
 
 const num = (v, fallback = 0) => (Number.isFinite(v) ? v : fallback);
 const clean = (s, max) => String(s ?? '').replace(/[\u0000-\u001f]/g, '').trim().slice(0, max);
