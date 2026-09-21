@@ -35,6 +35,7 @@
   #screen-login form > :nth-child(2) { animation-delay: .08s; }
   #screen-login form > :nth-child(3) { animation-delay: .16s; }
   #screen-login form > :nth-child(4) { animation-delay: .24s; }
+  #screen-login form > :nth-child(5) { animation-delay: .32s; }
 
   .logo { font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
   .logo .o { color: var(--accent); }
@@ -51,6 +52,11 @@
     font: 800 14px var(--mono); letter-spacing: .18em; text-transform: uppercase;
     display: flex; justify-content: space-between; transition: background .15s, color .15s; }
   .btn-main:hover { background: #000; color: var(--accent); }
+
+  .conn { margin-top: 16px; display: flex; align-items: center; gap: 8px; font-size: 10px; letter-spacing: .1em; color: var(--dim); }
+  .conn i { width: 7px; height: 7px; background: #e0a100; }
+  .conn.ok i { background: #3ddc84; }
+  .conn.err i { background: #e5484d; }
 
   /* ============ LOBBY ============ */
   body[data-state="lobby"] #screen-lobby { display: block; pointer-events: none; }
@@ -188,6 +194,7 @@
       <div class="hint">kosongkan untuk nama acak</div>
     </div>
     <button class="btn-main" type="submit"><span>Lanjut</span><span>&rarr;</span></button>
+    <div class="conn" id="conn"><i></i><span>menghubungkan ke server…</span></div>
   </form>
 </div>
 
@@ -264,7 +271,7 @@
 <div id="offline"><div>KONEKSI <b>TERPUTUS</b><br>muat ulang halaman (F5) untuk main lagi</div></div>
 
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.8.3/dist/socket.io.min.js"></script>
 <script>
 (() => {
   'use strict';
@@ -277,11 +284,18 @@
   const GRAVITY = 196;
   const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
 
+  // Alamat server multiplayer.
+  //   ''  = server yang sama dengan halaman ini (kalau index.html disajikan oleh server.js)
+  //   'https://nama-server-kamu.onrender.com' = kalau halaman ini di-host terpisah (mis. Vercel)
+  // Server socket.io HARUS jalan di hosting yang menjaga proses Node tetap hidup (bukan serverless).
+  const SERVER_URL = '';
+
   const $ = (id) => document.getElementById(id);
   const V3 = BABYLON.Vector3;
   const rnd = (r) => (Math.random() - 0.5) * 2 * r;
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
-  const socket = io();
+  // websocket-only: satu koneksi tetap. (Polling butuh request berurutan ke instance yang sama -> itu yang bikin error 400.)
+  const socket = SERVER_URL ? io(SERVER_URL, { transports: ['websocket'] }) : io({ transports: ['websocket'] });
 
   // ============================================================
   //  ENGINE, SCENE, KAMERA
@@ -966,6 +980,10 @@
       if (e) say(e, m.text);
     }
   });
+
+  const setConn = (cls, text) => { $('conn').className = 'conn ' + cls; $('conn').lastElementChild.textContent = text; };
+  socket.on('connect', () => setConn('ok', 'terhubung ke server'));
+  socket.on('connect_error', () => setConn('err', 'server belum menjawab, mencoba lagi… (hosting gratis bisa butuh ~1 menit untuk bangun)'));
 
   socket.on('disconnect', () => document.body.classList.add('offline'));
 
