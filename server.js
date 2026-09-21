@@ -1,12 +1,11 @@
 // ============================================================
-//  VOXELY — server paling sederhana
-//  express   -> menyajikan file game (index.html / voxely_mygame.json)
+//  BLOX — server paling sederhana
+//  express   -> menyajikan index.html
 //  socket.io -> multiplayer (posisi pemain) + chat
 //  Setiap game = 1 "room" socket.io, jadi pemain di game A
 //  tidak melihat / tidak bisa chat dengan pemain di game B.
 // ============================================================
 const path = require('path');
-const fs = require('fs');
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
@@ -15,23 +14,13 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
-// ALLOWED_ORIGIN dipakai kalau halaman game di-host di domain lain (mis. Vercel), contoh:
+// ALLOWED_ORIGIN dipakai kalau index.html di-host di domain lain (mis. Vercel), contoh:
 //   ALLOWED_ORIGIN=https://nama-kamu.vercel.app          (boleh beberapa, pisahkan dengan koma)
 // Kosong = semua origin boleh (cukup untuk belajar/dev).
 const ORIGINS = (process.env.ALLOWED_ORIGIN || '*').split(',').map((s) => s.trim()).filter(Boolean);
 const io = new Server(server, { cors: { origin: ORIGINS.includes('*') ? '*' : ORIGINS } });
 
-// File game: pakai "index.html", ATAU "voxely_mygame.json" kalau kamu sudah
-// mengganti namanya. File .json tetap dikirim sebagai HTML supaya
-// browser me-render gambarnya dengan benar (bukan di-download).
-const GAME_FILE = ['index.html', 'voxely_mygame.json']
-  .find((f) => fs.existsSync(path.join(__dirname, f))) || 'index.html';
-const GAME_HTML = fs.readFileSync(path.join(__dirname, GAME_FILE), 'utf8');
-
-app.get('/', (_req, res) => {
-  res.set('Content-Type', 'text/html; charset=utf-8');
-  res.send(GAME_HTML);
-});
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // daftar game + titik spawn (platform awal Obby berada di y=0, baseplate juga)
 const rnd = (r) => (Math.random() - 0.5) * 2 * r;
@@ -128,5 +117,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Voxely jalan di http://localhost:${PORT}`);
+  console.log(`BLOX jalan di http://localhost:${PORT}`);
 });
