@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Roblox clone paling sederhana: Babylon.js + Socket.IO",
   "main": "server.js",
+  "engines": { "node": ">=18" },
   "scripts": {
     "start": "node server.js"
   },
