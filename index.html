@@ -401,6 +401,9 @@
   //  KONEKSI SOCKET (opsional — tanpa server jadi mode solo)
   // ============================================================
   let socket = null, online = false, wasOnline = false, soloNoticed = false;
+  function updatePresence(game) {
+    if (socket && online) socket.emit('presence', { game: game || null, name: playerName });
+  }
   try {
     socket = typeof io === 'function' ? (SERVER_URL ? io(SERVER_URL, { transports: ['websocket'] }) : io({ transports: ['websocket'] })) : null;
   } catch (_) { socket = null; }
@@ -1686,13 +1689,14 @@
     if (activeApi.intro) addLog(activeApi.intro, 'sys');
     if (!online) addLog('mode solo — pemain lain tidak terlihat', 'sys');
     else socket.emit('join', { game: id, name: playerName, costume, x: spawn.x, y: spawn.y, z: spawn.z });
+    updatePresence(id);
     updateRosterUI();
     camera.setTarget(new V3(spawn.x, spawn.y + 2, spawn.z));
     camera.radius = 26;
     joining = false;
   }
   function leaveGame() {
-    if (online) socket.emit('leave');
+    if (online) { socket.emit('leave'); updatePresence(null); }
     for (const pid in others) { removeEntity(others[pid]); delete others[pid]; }
     for (const pid in roster) delete roster[pid];
     if (me) { removeEntity(me); me = null; }
@@ -1984,6 +1988,7 @@
     camera.beta = 1.15;
     camera.alpha = -Math.PI / 2 + 0.4;
     updateRosterUI();
+    updatePresence(null);
   }
 
   // ============================================================

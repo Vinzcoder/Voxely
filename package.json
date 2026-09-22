@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Voxely multiplayer voxel game: Babylon.js + Socket.IO",
   "main": "server.js",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "@nxenjs/discord-rich-presence": "^1.0.0",
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
   }

@@ -9,6 +9,24 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
+const { Client } = require('@nxenjs/discord-rich-presence');
+
+// Discord Rich Presence hanya aktif saat Discord Desktop tersedia.
+let discordRpc = null;
+try {
+  discordRpc = new Client();
+  discordRpc.on('error', (err) => console.error('RPC Error:', err));
+  discordRpc.on('ready', () => {
+    console.log('Discord Rich Presence is now running!');
+    setDiscordActivity();
+  });
+  discordRpc.login('1551887022652919828').catch((err) => {
+    console.error('Discord RPC unavailable:', err.message);
+    discordRpc = null;
+  });
+} catch (err) {
+  console.error('Discord RPC unavailable:', err.message);
+}
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -32,6 +50,25 @@ const GAMES = {
 
 // id socket -> { id, name, game, shirt, pants, skin, x, y, z, ry }
 const players = {};
+let discordPresence = { details: 'Playing Voxely', state: 'In the lobby' };
+
+function setDiscordActivity() {
+  if (!discordRpc) return;
+  try {
+    discordRpc.setActivity({
+      details: discordPresence.details,
+      state: discordPresence.state,
+      startTimestamp: Date.now(),
+      largeImageKey: 'large_image_name',
+      largeImageText: 'Voxely',
+      smallImageKey: 'small_image_name',
+      smallImageText: 'v1.0.0',
+      instance: true,
+    });
+  } catch (err) {
+    console.error('RPC Activity Error:', err.message);
+  }
+}
 
 // cek cepat "server hidup?" (dipakai hosting untuk health check) — buka /health di browser
 app.get('/health', (_req, res) => res.json({ ok: true, players: Object.keys(players).length }));
@@ -52,6 +89,13 @@ const counts = () => {
   return c;
 };
 const broadcastCounts = () => io.emit('counts', counts());
+
+function updateDiscordPresence(game, name) {
+  discordPresence = game
+    ? { details: `Playing ${GAMES[game]?.name || 'Voxely'}`, state: name ? `as ${name}` : 'In game' }
+    : { details: 'Playing Voxely', state: 'In the lobby' };
+  setDiscordActivity();
+}
 
 function leave(socket) {
   const p = players[socket.id];
@@ -89,7 +133,13 @@ io.on('connection', (socket) => {
     socket.emit('init', { me: player, players: playersIn(player.game) });   // state penuh untuk pemain baru
     socket.to(player.game).emit('player-joined', player);                    // kabari yang lain di game yang sama
     io.to(player.game).emit('chat', { system: true, text: `${player.name} bergabung` });
+    updateDiscordPresence(player.game, player.name);
     broadcastCounts();
+  });
+
+  socket.on('presence', (d) => {
+    if (!d || (d.game && !GAMES[d.game])) return;
+    updateDiscordPresence(d.game || null, clean(d.name, 16));
   });
 
   // klien mengirim posisinya ~20x/detik
