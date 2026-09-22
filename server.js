@@ -9,24 +9,25 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
-const { Client } = require('@nxenjs/discord-rich-presence');
 
 // Discord Rich Presence hanya aktif saat Discord Desktop tersedia.
 let discordRpc = null;
-try {
-  discordRpc = new Client();
-  discordRpc.on('error', (err) => console.error('RPC Error:', err));
-  discordRpc.on('ready', () => {
-    console.log('Discord Rich Presence is now running!');
-    setDiscordActivity();
-  });
-  discordRpc.login('1551887022652919828').catch((err) => {
+async function initializeDiscordRpc() {
+  try {
+    const { Client } = await import('@nxenjs/discord-rich-presence');
+    discordRpc = new Client();
+    discordRpc.on('error', (err) => console.error('RPC Error:', err));
+    discordRpc.on('ready', () => {
+      console.log('Discord Rich Presence is now running!');
+      setDiscordActivity();
+    });
+    await discordRpc.login('1551887022652919828');
+  } catch (err) {
     console.error('Discord RPC unavailable:', err.message);
     discordRpc = null;
-  });
-} catch (err) {
-  console.error('Discord RPC unavailable:', err.message);
+  }
 }
+void initializeDiscordRpc();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
