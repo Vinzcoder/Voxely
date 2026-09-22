@@ -2,14 +2,19 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
 <title>Voxely</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000; --fg: #f2f2f2; --dim: #7d7d7d; --line: #262626; --accent: #ff6a00;
+    --bg: #000;
+    --fg: #f2f2f2;
+    --dim: #7d7d7d;
+    --line: #262626;
+    --accent: #ff6a00;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +37,8 @@
   #screen-login form > :nth-child(3) { animation-delay: .16s; }
   #screen-login form > :nth-child(4) { animation-delay: .24s; }
   #screen-login form > :nth-child(5) { animation-delay: .32s; }
-  .logo { font-size: 84px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+
+  .logo { font-size: 78px; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
   .logo .o { color: var(--accent); }
   .tag { margin: 10px 0 34px; font-size: 11px; color: var(--dim); letter-spacing: .08em; text-transform: uppercase; }
   .tag b { color: var(--accent); font-weight: 700; }
@@ -48,7 +54,7 @@
     display: flex; justify-content: space-between; transition: background .15s, color .15s; }
   .btn-main:hover { background: #000; color: var(--accent); }
   .conn { margin-top: 16px; display: flex; align-items: center; gap: 8px; font-size: 10px; letter-spacing: .1em; color: var(--dim); }
-  .conn i { width: 7px; height: 7px; background: #e0a100; }
+  .conn i { flex: none; width: 7px; height: 7px; background: #e0a100; }
   .conn.ok i { background: #3ddc84; }
   .conn.err i { background: #e5484d; }
 
@@ -62,32 +68,43 @@
   .guest { display: inline-block; margin-left: 8px; padding: 2px 7px; font-size: 9px; letter-spacing: .16em; color: #000; background: var(--accent); font-weight: 800; vertical-align: 2px; }
   #rename { margin-top: 8px; background: none; border: 0; color: var(--dim); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
   #rename:hover { color: var(--accent); }
+
   .lobby-col { position: absolute; top: 50%; transform: translateY(-50%); pointer-events: auto; animation: fade .7s .1s both; }
-  .lobby-col.left { left: 32px; width: min(400px, 32vw); }
+  .lobby-col.left { left: 32px; top: 96px; bottom: 24px; transform: none; width: min(400px, 32vw); overflow-y: auto; scrollbar-width: none; padding-bottom: 6px; }
+  .lobby-col.left::-webkit-scrollbar { display: none; }
   .lobby-col.right { right: 32px; width: min(330px, 28vw); animation-delay: .2s; }
   .lobby-col h2 { font-size: 10px; letter-spacing: .18em; color: var(--dim); font-weight: 700; margin-bottom: 14px; text-transform: uppercase; }
-  .lobby-col h2 b { color: var(--accent); }
-  #games { display: flex; flex-direction: column; gap: 12px; }
+  .lobby-col h2.sub { margin-top: 26px; }
+
+  #games, #customGames { display: flex; flex-direction: column; gap: 12px; }
+  #customGames { margin-top: 12px; }
   .game { text-align: left; color: var(--fg); background: rgba(0,0,0,.76); border: 1px solid var(--line); cursor: pointer; padding: 0;
     display: flex; flex-direction: column; backdrop-filter: blur(4px); transition: transform .15s, border-color .15s; }
   .game:hover { border-color: var(--accent); transform: translateX(5px); }
   .joining .game { opacity: .45; pointer-events: none; }
-  .thumb { height: 86px; position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+  .thumb { height: 72px; position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
   .thumb.baseplate { background: linear-gradient(#8ec9ff 0 46%, transparent 46%), repeating-linear-gradient(90deg, #9aa0a8 0 30px, #858b94 30px 32px); }
   .thumb.baseplate::before { content: ''; position: absolute; left: 58%; bottom: 26%; width: 34px; height: 30px; background: #ff9a3d; box-shadow: -60px 12px 0 -6px #3498db, 44px 14px 0 -8px #2ecc71; }
   .thumb.obby { background: #2b2860; }
-  .thumb.obby::before { content: ''; position: absolute; left: 14px; bottom: 12px; width: 28px; height: 8px; background: #3498db;
-    box-shadow: 40px -12px 0 #9b59b6, 80px -24px 0 #e74c3c, 120px -36px 0 #ff6a00, 160px -48px 0 #f1c40f; }
-  .thumb.mygame { background: #20293a; }
-  .thumb.mygame::before { content: ''; position: absolute; left: 20px; bottom: 16px; width: 26px; height: 18px; background: #ff6a00; box-shadow: 34px -10px 0 -3px #3498db, 68px 4px 0 -6px #2ecc71, 30px 16px 0 -6px #9b59b6; }
-  .info { padding: 12px 14px; }
-  .title { display: flex; justify-content: space-between; align-items: baseline; }
-  .title span { font-weight: 800; font-size: 16px; letter-spacing: .04em; }
-  .title em { font-style: normal; font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
-  .info p { font-size: 11px; line-height: 1.6; color: #a4a4a4; margin: 6px 0 10px; }
+  .thumb.obby::before { content: ''; position: absolute; left: 14px; bottom: 10px; width: 28px; height: 8px; background: #3498db;
+    box-shadow: 40px -10px 0 #9b59b6, 80px -20px 0 #e74c3c, 120px -30px 0 #ff6a00, 160px -40px 0 #f1c40f; }
+  .thumb.custom { background: #0b0b0b; background-image: linear-gradient(rgba(255,106,0,.28) 1px, transparent 1px), linear-gradient(90deg, rgba(255,106,0,.28) 1px, transparent 1px); background-size: 16px 16px; }
+  .thumb.custom::before { content: ''; position: absolute; left: 32px; bottom: 16px; width: 32px; height: 16px; background: #ff6a00; box-shadow: 48px -16px 0 #3498db, 96px -32px 0 #f1c40f; }
+  .info { padding: 11px 14px; }
+  .title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .title span { font-weight: 800; font-size: 16px; letter-spacing: .04em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .title em { flex: none; font-style: normal; font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+  .info p { font-size: 11px; line-height: 1.55; color: #a4a4a4; margin: 6px 0 9px; }
   .foot { display: flex; justify-content: space-between; font-size: 11px; }
   .cnt i { display: inline-block; width: 7px; height: 7px; background: #3ddc84; margin-right: 6px; }
   .go { color: var(--accent); font-weight: 800; letter-spacing: .14em; }
+
+  .maker { display: flex; gap: 10px; }
+  .mbtn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 8px; cursor: pointer; color: var(--fg);
+    background: rgba(0,0,0,.76); border: 1px solid var(--line); font: 800 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; transition: border-color .15s, color .15s; }
+  .mbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .mbtn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
   .costume { padding: 18px 18px 8px; border-top: 2px solid var(--accent); background: rgba(0,0,0,.76); backdrop-filter: blur(4px); border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .crow { margin-bottom: 18px; }
   .crow label { display: block; font-size: 10px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; margin-bottom: 8px; }
@@ -101,18 +118,24 @@
   input.sw[type="color"]::-moz-color-swatch { border: 0; }
   #randomize { width: 100%; margin-bottom: 14px; padding: 10px; background: transparent; color: var(--fg); border: 1px solid var(--line); font-size: 11px; letter-spacing: .16em; cursor: pointer; text-transform: uppercase; }
   #randomize:hover { border-color: var(--accent); color: var(--accent); }
-  #createGame { margin-top: 14px; width: 100%; padding: 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .14em; cursor: pointer; text-transform: uppercase; }
-  #createGame:hover { background: var(--accent); color: #000; }
+
   @media (max-width: 960px) {
     body[data-state="lobby"] #screen-lobby { pointer-events: auto; overflow-y: auto; display: flex; flex-direction: column; gap: 26px; padding: 26px 20px 30px; background: rgba(0,0,0,.86); }
     #screen-lobby::before { display: none; }
-    .lobby-head, .lobby-col { position: static; transform: none; width: 100% !important; }
+    .lobby-head, .lobby-col { position: static !important; transform: none !important; width: 100% !important; overflow: visible !important; }
   }
 
+  /* ============ TOAST (dipakai di semua layar) ============ */
+  #toast { position: fixed; z-index: 25; top: 24px; left: 50%; transform: translate(-50%, -8px); max-width: calc(100vw - 32px); padding: 11px 20px; background: rgba(0,0,0,.88); border: 1px solid var(--accent);
+    font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: 0; transition: opacity .25s, transform .25s; text-align: center; pointer-events: none; }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
   /* ============ HUD ============ */
-  #hud { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+  #hud { display: none; position: fixed; inset: 0; z-index: 5; pointer-events: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   body[data-state="playing"] #hud { display: block; }
-  #topbar { position: absolute; left: 16px; top: 16px; display: flex; gap: 8px; }
+  body.testplay #btnChat { display: none; }
+
+  #topbar { position: absolute; left: max(16px, env(safe-area-inset-left)); top: max(16px, env(safe-area-inset-top)); display: flex; gap: 8px; }
   .ibtn { position: relative; width: 46px; height: 46px; display: grid; place-items: center; cursor: pointer; pointer-events: auto;
     background: rgba(0,0,0,.74); border: 1px solid var(--line); color: var(--fg); backdrop-filter: blur(4px); transition: border-color .15s, color .15s, background .15s; }
   .ibtn:hover { border-color: var(--accent); color: var(--accent); }
@@ -120,7 +143,8 @@
   .ibtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   #badge { position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 4px; display: grid; place-items: center;
     background: var(--accent); color: #000; font: 800 10px var(--mono); }
-  #chat { position: absolute; left: 16px; top: 72px; width: min(400px, calc(100vw - 32px)); border-left: 2px solid var(--accent); pointer-events: auto; animation: rise .25s both; }
+
+  #chat { position: absolute; left: max(16px, env(safe-area-inset-left)); top: calc(max(16px, env(safe-area-inset-top)) + 56px); width: min(400px, calc(100vw - 32px)); border-left: 2px solid var(--accent); pointer-events: auto; animation: rise .25s both; }
   #log { height: 160px; overflow-y: auto; padding: 10px 12px; font-size: 12px; line-height: 1.55; scrollbar-width: none; }
   #log::-webkit-scrollbar { display: none; }
   #log .msg { word-break: break-word; }
@@ -129,28 +153,71 @@
   #log .sys::before { content: '» '; color: var(--accent); }
   #chatForm { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding: 0 6px 0 12px; }
   #chatForm > span { color: var(--accent); font-weight: 800; }
-  #msg { flex: 1; background: transparent; border: 0; outline: none; color: var(--fg); font: 12px var(--mono); padding: 12px 0; }
-  #msg::placeholder { color: #4a4a4a; }
-  #chatForm button { width: 32px; height: 32px; display: grid; place-items: center; background: none; border: 0; color: var(--accent); cursor: pointer; }
+  #msg { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: var(--fg); font: 16px var(--mono); padding: 10px 0; -webkit-user-select: text; user-select: text; }
+  #msg::placeholder { color: #4a4a4a; font-size: 12px; }
+  #chatForm button { width: 34px; height: 34px; display: grid; place-items: center; background: none; border: 0; color: var(--accent); cursor: pointer; }
   #chatForm button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-  #players { position: absolute; top: 16px; right: 16px; min-width: 190px; max-width: 240px; border-top: 2px solid var(--accent); padding: 10px 12px 8px; font-size: 12px; pointer-events: auto; }
+
+  #players { position: absolute; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); min-width: 190px; max-width: 240px; border-top: 2px solid var(--accent); padding: 10px 12px 8px; font-size: 12px; pointer-events: auto; }
   #players h3 { font-size: 10px; letter-spacing: .14em; color: var(--dim); font-weight: 700; margin-bottom: 8px; }
   #players h3 span { color: var(--accent); }
   #roster { list-style: none; max-height: 40vh; overflow: auto; }
   #roster li { display: flex; align-items: center; gap: 8px; padding: 3px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #roster i { flex: none; width: 9px; height: 9px; outline: 1px solid rgba(255,255,255,.35); }
   #roster li.me { color: var(--accent); font-weight: 700; }
+
   #help { position: absolute; right: 16px; bottom: 16px; max-width: 330px; text-align: right; font-size: 10px; line-height: 1.8; letter-spacing: .06em; color: rgba(255,255,255,.88); text-shadow: 0 1px 3px rgba(0,0,0,.85); }
   #help b { color: var(--accent); }
-  #toast { position: absolute; top: 24px; left: 50%; transform: translate(-50%, -8px); padding: 11px 20px; background: rgba(0,0,0,.85); border: 1px solid var(--accent);
-    font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; opacity: 0; transition: opacity .25s, transform .25s; white-space: nowrap; }
-  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  body.touch #help { display: none; }
 
-  /* ============ MENU & OFFLINE ============ */
+  /* ---------- kontrol sentuh (HP): joystick + tombol lompat ---------- */
+  #touch { display: none; position: absolute; inset: 0; pointer-events: none; }
+  body.touch[data-state="playing"] #touch { display: block; }
+  #joy { position: absolute; left: max(24px, env(safe-area-inset-left)); bottom: max(28px, env(safe-area-inset-bottom)); width: 136px; height: 136px; border-radius: 50%;
+    background: rgba(0,0,0,.38); border: 2px solid rgba(255,255,255,.3); pointer-events: auto; touch-action: none; }
+  #joy::before { content: ''; position: absolute; inset: 34px; border-radius: 50%; border: 1px dashed rgba(255,255,255,.22); }
+  #joyKnob { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+    background: rgba(255,106,0,.9); border: 2px solid #ff9a3d; pointer-events: none; will-change: transform; }
+  #jumpBtn { position: absolute; right: max(30px, env(safe-area-inset-right)); bottom: max(46px, calc(env(safe-area-inset-bottom) + 18px)); width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(255,106,0,.88); border: 2px solid #ff9a3d; color: #000; pointer-events: auto; touch-action: none; cursor: pointer; }
+  #jumpBtn:active, #jumpBtn.held { background: #fff; border-color: #fff; }
+  #jumpBtn svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ============ EDITOR GAME ============ */
+  #builder { display: none; position: fixed; inset: 0; z-index: 6; pointer-events: none; }
+  body[data-state="building"] #builder { display: block; }
+  #bpanel { position: absolute; left: 16px; top: 16px; bottom: 16px; width: 292px; overflow-y: auto; padding: 16px; pointer-events: auto; border-top: 2px solid var(--accent); scrollbar-width: thin; scrollbar-color: #333 transparent; }
+  .bhead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; font-size: 11px; font-weight: 800; letter-spacing: .18em; }
+  .bhead em { font-style: normal; color: var(--accent); font-size: 10px; letter-spacing: .08em; }
+  #gname { width: 100%; background: transparent; color: var(--fg); border: 0; border-bottom: 2px solid var(--line); font: 700 16px var(--mono); padding: 6px 0 8px; outline: none; }
+  #gname:focus { border-color: var(--accent); }
+  .fname { margin-top: 7px; font-size: 10px; color: #666; word-break: break-all; }
+  .fname b { color: var(--dim); font-weight: 700; }
+  .bsec { margin: 18px 0 8px; font-size: 10px; letter-spacing: .16em; color: var(--dim); text-transform: uppercase; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button { flex: 1 1 auto; padding: 9px 8px; background: transparent; border: 1px solid var(--line); color: var(--fg); font: 700 11px var(--mono); letter-spacing: .05em; cursor: pointer; }
+  .seg button:hover { border-color: #777; }
+  .seg button.on { background: var(--accent); border-color: var(--accent); color: #000; }
+  .seg kbd { opacity: .55; font: inherit; font-size: 9px; margin-left: 4px; }
+  .dims { display: flex; align-items: center; gap: 6px; color: var(--dim); }
+  .dims input { width: 100%; min-width: 0; background: #0a0a0a; border: 1px solid var(--line); color: var(--fg); font: 700 14px var(--mono); padding: 8px 4px; text-align: center; outline: none; }
+  .dims input:focus { border-color: var(--accent); }
+  .presets { margin-top: 8px; }
+  .presets button { padding: 7px 6px; font-size: 10px; }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 11px; cursor: pointer; }
+  .check input { accent-color: var(--accent); width: 15px; height: 15px; }
+  #btop { position: absolute; top: 16px; right: 16px; max-width: 300px; padding: 10px 14px; font-size: 10px; line-height: 1.9; letter-spacing: .05em; color: rgba(255,255,255,.85); }
+  #btop b { color: var(--accent); }
+  #bbar { position: absolute; left: calc(50% + 154px); bottom: 18px; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto; }
+  #bbar .abtn { padding: 12px 16px; gap: 14px; font-size: 11px; background: rgba(0,0,0,.82); }
+  #bbar .abtn.primary { background: var(--accent); }
+  #bbar .abtn.primary:hover { background: #000; }
+
+  /* ============ MENU ============ */
   #menu { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(0,0,0,.66); backdrop-filter: blur(5px); }
   #menu .card { width: min(360px, calc(100vw - 40px)); padding: 26px 26px 24px; background: #050505; border: 1px solid var(--line); border-top: 2px solid var(--accent); animation: rise .25s both; }
   #menu .eyebrow { font-size: 10px; letter-spacing: .2em; color: var(--accent); font-weight: 800; }
-  #menu h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 6px 0 4px; }
+  #menu h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 6px 0 4px; word-break: break-word; }
   #menu p { font-size: 11px; color: var(--dim); margin-bottom: 24px; }
   #menu p b { color: var(--fg); }
   #menu .actions { display: flex; flex-direction: column; gap: 10px; }
@@ -160,153 +227,57 @@
   .abtn.primary:hover { background: #000; color: var(--accent); }
   .abtn.ghost { background: transparent; color: var(--fg); border: 2px solid var(--line); }
   .abtn.ghost:hover { border-color: #e5484d; color: #e5484d; }
+  .abtn.plain { background: transparent; color: var(--fg); border: 2px solid var(--line); }
+  .abtn.plain:hover { border-color: var(--accent); color: var(--accent); }
+
   #offline { display: none; position: fixed; inset: 0; z-index: 30; place-items: center; background: rgba(0,0,0,.92); font-size: 13px; letter-spacing: .1em; text-align: center; line-height: 2; }
   body.offline #offline { display: grid; }
   #offline b { color: var(--accent); }
 
-  /* ============ MOBILE ============ */
-  #mobileControls { display: none; position: fixed; inset: 0; z-index: 6; pointer-events: none; }
-  #joystick { position: absolute; left: 24px; bottom: 24px; width: 116px; height: 116px; border: 2px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(0,0,0,.28); pointer-events: auto; touch-action: none; }
-  #joystickKnob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(255,106,0,.9); border: 2px solid #fff; }
-  #jumpButton { position: absolute; right: 28px; bottom: 38px; width: 82px; height: 82px; border: 2px solid var(--accent); border-radius: 50%; background: rgba(0,0,0,.42); color: var(--fg); font: 800 11px var(--mono); letter-spacing: .08em; pointer-events: auto; touch-action: none; }
-  #jumpButton:active { background: var(--accent); color: #000; }
-  @media (pointer: coarse) { body[data-state="playing"] #mobileControls { display: block; } }
-  @media (max-width: 640px) { .logo { font-size: 64px; } #help, #players { display: none; } }
-
-  /* ================= VOXELY STUDIO v2 ================= */
-  #studio { position: fixed; inset: 0; z-index: 25; display: grid; grid-template-rows: 52px 1fr 168px 26px; background: #0c0d10; color: #e8e9ec; font-family: var(--mono); animation: fade .18s both; }
-  .st-bar { display: flex; align-items: center; gap: 7px; padding: 0 12px; background: #14151a; border-bottom: 1px solid #22242b; overflow-x: auto; scrollbar-width: none; user-select: none; }
-  .st-bar::-webkit-scrollbar { display: none; }
-  .st-brand { display: flex; align-items: baseline; gap: 8px; margin-right: 8px; white-space: nowrap; }
-  .st-brand b { font-size: 13px; font-weight: 800; letter-spacing: .1em; color: #fff; }
-  .st-brand i { font-style: normal; color: var(--accent); }
-  .st-brand span { font-size: 9px; color: #5b5f6b; letter-spacing: .14em; }
-  .st-btn { flex: none; height: 32px; padding: 0 11px; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; background: #1b1d24; border: 1px solid #2b2e38; color: #c8cad1; cursor: pointer; font: 700 10px var(--mono); letter-spacing: .07em; transition: border-color .13s, color .13s, background .13s; }
-  .st-btn:hover { border-color: #4a4e5a; color: #fff; }
-  .st-btn:active { transform: translateY(1px); }
-  .st-btn.on { background: #221103; border-color: var(--accent); color: var(--accent); }
-  .st-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; }
-  .st-btn.primary:hover { background: #000; color: var(--accent); }
-  .st-btn.danger:hover { border-color: #e5484d; color: #e5484d; }
-  .st-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .st-btn.wide { width: 100%; justify-content: center; }
-  .st-kbd { padding: 1px 4px; border: 1px solid #3a3e49; border-radius: 3px; font-size: 8px; color: #7c8090; font-weight: 700; }
-  .st-btn.on .st-kbd { border-color: rgba(255,106,0,.5); color: var(--accent); }
-  .st-sep { flex: none; width: 1px; height: 20px; background: #2b2e38; margin: 0 3px; }
-  .st-spacer { flex: 1; min-width: 8px; }
-  .st-body { min-height: 0; display: grid; grid-template-columns: 224px 1fr 264px; }
-  .st-side { min-height: 0; display: flex; flex-direction: column; background: #101116; }
-  .st-side.l { border-right: 1px solid #1f2127; }
-  .st-side.r { border-left: 1px solid #1f2127; }
-  .st-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 12px; font-size: 9px; font-weight: 800; letter-spacing: .16em; color: #7c8090; border-bottom: 1px solid #1f2127; text-transform: uppercase; }
-  .st-head b { color: var(--accent); }
-  .st-list { flex: 1; overflow-y: auto; padding: 6px; }
-  .st-list:empty::after { content: 'Belum ada objek. Tambah lewat tombol CUBE / SPHERE.'; display: block; padding: 8px; font-size: 9px; color: #4d515c; line-height: 1.9; }
-  .st-row { display: flex; align-items: center; gap: 8px; padding: 7px 8px; cursor: pointer; color: #b4b7c0; font-size: 11px; border: 1px solid transparent; }
-  .st-row:hover { background: #171922; }
-  .st-row.on { background: #221103; border-color: rgba(255,106,0,.45); color: #ffd9bd; }
-  .st-row svg { flex: none; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; opacity: .75; }
-  .st-row .dot { flex: none; width: 9px; height: 9px; outline: 1px solid rgba(255,255,255,.22); }
-  .st-row .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .st-row .idx { font-size: 9px; color: #555a66; }
-  .st-view { position: relative; min-width: 0; min-height: 0; background: #17181d; overflow: hidden; }
-  .st-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
-  .st-hint { position: absolute; top: 10px; left: 12px; z-index: 2; pointer-events: none; font-size: 9px; letter-spacing: .09em; color: #666b77; line-height: 1.9; text-transform: uppercase; }
-  .st-hint b { color: #a6abb8; }
-  .st-views { position: absolute; top: 10px; right: 12px; z-index: 2; display: flex; gap: 5px; }
-  .st-views .st-btn { height: 24px; padding: 0 9px; background: rgba(16,17,22,.82); font-size: 9px; }
-  .st-empty { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; pointer-events: none; text-align: center; color: #565a66; font-size: 11px; letter-spacing: .08em; line-height: 2.1; }
-  .st-empty b { color: var(--accent); }
-  .st-toast { position: absolute; left: 50%; top: 14px; z-index: 3; transform: translateX(-50%); padding: 7px 14px; background: rgba(10,10,13,.92); border: 1px solid var(--accent); color: var(--accent); font: 800 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; }
-  .st-toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
-  .st-badge-sel { position: absolute; left: 12px; bottom: 10px; z-index: 2; pointer-events: none; font-size: 9px; font-weight: 800; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
-  .st-props { flex: 1; overflow-y: auto; padding: 12px 12px 24px; }
-  .st-group { margin-bottom: 12px; border: 1px solid #1f2127; background: #0d0e12; }
-  .st-group > h4 { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; font-size: 9px; font-weight: 800; letter-spacing: .15em; color: #8b8f9b; border-bottom: 1px solid #1f2127; text-transform: uppercase; }
-  .st-group > h4 span:last-child { color: #4d515c; letter-spacing: .06em; font-weight: 700; text-transform: none; }
-  .st-c { padding: 9px 10px; display: flex; flex-direction: column; gap: 7px; }
-  .st-lab { font-size: 9px; letter-spacing: .13em; color: #8b8f9b; text-transform: uppercase; }
-  .st-tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-  .st-in { display: flex; align-items: stretch; height: 26px; border: 1px solid #2b2e38; background: #0a0b0e; }
-  .st-in:focus-within { border-color: var(--accent); }
-  .st-in .ax { flex: none; width: 21px; display: grid; place-items: center; font-size: 9px; font-weight: 800; background: #191b22; cursor: ew-resize; user-select: none; touch-action: none; }
-  .ax.c-x { color: #ff6b5e; } .ax.c-y { color: #57d98b; } .ax.c-z { color: #5eb8ff; }
-  .st-in input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: #e8e9ec; font: 700 10px var(--mono); padding: 0 5px; }
-  .st-text { width: 100%; height: 28px; padding: 0 8px; background: #0a0b0e; border: 1px solid #2b2e38; color: #e8e9ec; font: 700 11px var(--mono); outline: none; }
-  .st-text:focus { border-color: var(--accent); }
-  textarea.st-text { height: auto; min-height: 52px; padding: 7px 8px; resize: vertical; font-weight: 400; line-height: 1.5; }
-  .st-swatches { display: flex; flex-wrap: wrap; gap: 6px; }
-  .st-sw { width: 22px; height: 22px; padding: 0; border: 0; outline: 1px solid #33363f; cursor: pointer; background: none; }
-  .st-sw:hover { outline-color: #9aa0ad; }
-  .st-sw.on { outline: 2px solid var(--accent); outline-offset: 1px; }
-  input.st-sw[type="color"] { -webkit-appearance: none; appearance: none; outline: 1px dashed #6a6f7b; }
-  input.st-sw[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-  input.st-sw[type="color"]::-webkit-color-swatch { border: 0; }
-  input.st-sw[type="color"]::-moz-color-swatch { border: 0; }
-  .st-note { font-size: 10px; color: #7c8090; line-height: 1.9; }
-  .st-note b { color: var(--accent); }
-  .st-rowbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .st-rowbtns .st-btn { justify-content: center; }
-  .st-bottom { min-height: 0; display: grid; grid-template-columns: 1fr 320px; background: #0e0f13; border-top: 1px solid #1f2127; }
-  .st-console { min-width: 0; display: flex; flex-direction: column; border-right: 1px solid #1f2127; }
-  #stLog { flex: 1; overflow-y: auto; padding: 7px 12px; font-size: 10px; line-height: 1.85; color: #a8aeb9; }
-  #stLog p { white-space: pre-wrap; word-break: break-word; }
-  #stLog .t { color: #454954; margin-right: 8px; }
-  #stLog .i { color: #3ddc84; margin-right: 6px; }
-  #stLog .o { color: var(--accent); margin-right: 6px; }
-  #stLog .w { color: #ffd35e; margin-right: 6px; }
-  #stLog .e { color: #ff6b5e; margin-right: 6px; }
-  .st-keys { min-width: 0; padding: 8px 14px; overflow-y: auto; font-size: 9px; line-height: 2.05; color: #7c8090; }
-  .st-keys h5 { font-size: 8px; letter-spacing: .16em; color: #4d515c; margin: 5px 0 1px; text-transform: uppercase; }
-  .st-keys b { color: #c8cad1; }
-  .st-keys kbd { display: inline-block; min-width: 15px; text-align: center; padding: 0 4px; margin: 0 2px 0 0; border: 1px solid #33363f; border-radius: 3px; font: 700 9px var(--mono); color: #aeb2bd; background: #171922; }
-  .st-status { display: flex; align-items: stretch; background: #14151a; border-top: 1px solid #1f2127; font-size: 9px; letter-spacing: .08em; color: #6d7280; overflow: hidden; user-select: none; }
-  .st-status > div { display: flex; align-items: center; gap: 6px; padding: 0 12px; border-right: 1px solid #1f2127; white-space: nowrap; }
-  .st-status b { color: #dfe1e7; font-weight: 700; }
-  .st-status .lead { color: #000; background: var(--accent); font-weight: 800; letter-spacing: .14em; }
-  .st-list, .st-props, #stLog, .st-keys { scrollbar-width: thin; scrollbar-color: #242730 transparent; }
-  .st-list::-webkit-scrollbar, .st-props::-webkit-scrollbar, #stLog::-webkit-scrollbar, .st-keys::-webkit-scrollbar { width: 8px; }
-  .st-list::-webkit-scrollbar-thumb, .st-props::-webkit-scrollbar-thumb, #stLog::-webkit-scrollbar-thumb, .st-keys::-webkit-scrollbar-thumb { background: #242730; }
-  @media (max-width: 1080px) { .st-body { grid-template-columns: 196px 1fr 236px; } .st-bottom { grid-template-columns: 1fr; } .st-keys { display: none; } }
-  @media (max-width: 820px) {
-    #studio { grid-template-rows: 50px 1fr 128px 24px; }
-    .st-body { grid-template-columns: 1fr 218px; }
-    .st-side.l { display: none; }
-    .st-btn .lbl { display: none; }
-    .st-status > div:nth-child(n+5) { display: none; }
-  }
-  @media (max-width: 540px) { .st-body { grid-template-columns: 1fr; } .st-side.r { display: none; } .st-brand span, .st-hint { display: none; } }
+  @media (max-width: 640px) { .logo { font-size: 60px; } #help, #players { display: none; } }
+  @media (max-height: 500px) { #log { height: 90px; } }
+  @media (max-width: 900px) { #bpanel { width: 250px; } #bbar { left: 50%; flex-wrap: wrap; justify-content: center; width: calc(100vw - 300px); left: calc(50% + 125px); } #btop { display: none; } }
 </style>
 </head>
 <body data-state="login">
 
 <canvas id="game"></canvas>
 
-<!-- ========== 1. LOGIN ========== -->
+<!-- ========== 1. LOGIN (nama guest) ========== -->
 <div id="screen-login" class="screen">
   <form id="loginForm" autocomplete="off">
-    <img src="logo.png" alt="Can't Load Voxely Logo">
-    <div class="tag">Dunia voxel multiplayer &middot; <b>babylon.js</b> + <b>socket.io</b></div>
+    <div class="logo">V<span class="o">O</span>XELY | Beta</div>
+    <div class="tag">Roblox clone paling sederhana &middot; <b>babylon.js</b> + <b>socket.io</b></div>
     <div>
       <label class="field" for="name">Nama guest kamu</label>
       <input id="name" maxlength="16" placeholder="guest" spellcheck="false" autofocus>
       <div class="hint">kosongkan untuk nama acak</div>
     </div>
     <button class="btn-main" type="submit"><span>Lanjut</span><span>&rarr;</span></button>
-    <div class="conn" id="conn"><i></i><span>menghubungkan ke server&hellip;</span></div>
+    <div class="conn" id="conn"><i></i><span>menghubungkan ke server…</span></div>
   </form>
 </div>
 
-<!-- ========== 2. LOBBY ========== -->
+<!-- ========== 2. LOBBY (pilih game + kostum + game buatan) ========== -->
 <div id="screen-lobby" class="screen">
   <div class="lobby-head">
     <div class="hello">Halo,<b id="hello"></b><span class="guest">GUEST</span></div>
     <button id="rename" type="button">ganti nama</button>
   </div>
+
   <section class="lobby-col left">
-    <h2>Pilih game <b>&middot; <span id="gameCount">0</span></b></h2>
+    <h2>Pilih game</h2>
     <div id="games"></div>
+
+    <h2 class="sub">Game buatan</h2>
+    <div class="maker">
+      <button id="openBuilder" class="mbtn" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Buat game</button>
+      <button id="openFile" class="mbtn" type="button"><svg viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg>Buka .json</button>
+      <input id="fileGame" type="file" accept=".json,application/json" hidden>
+    </div>
+    <div id="customGames"></div>
   </section>
+
   <section class="lobby-col right">
     <h2>Kostum karakter</h2>
     <div class="costume">
@@ -314,18 +285,73 @@
       <div class="crow"><label>Baju</label><div class="sws" id="sw-shirt"></div></div>
       <div class="crow"><label>Celana</label><div class="sws" id="sw-pants"></div></div>
       <div class="crow"><label>Kulit</label><div class="sws" id="sw-skin"></div></div>
-      <button id="createGame" type="button">Buka Voxely Studio</button>
     </div>
   </section>
 </div>
 
-<!-- ========== 3. STUDIO (dibangun lewat JS) ========== -->
-<div id="studio" hidden></div>
+<!-- ========== 3. EDITOR GAME ========== -->
+<div id="builder">
+  <aside id="bpanel" class="panel">
+    <div class="bhead"><span>EDITOR GAME</span><em id="bcount">0/800</em></div>
 
-<!-- ========== 4. HUD ========== -->
+    <label class="field" for="gname">Nama game</label>
+    <input id="gname" maxlength="24" value="mygame" spellcheck="false" autocomplete="off">
+    <div class="fname">file: <b id="fname">voxely_mygame.json</b></div>
+
+    <div class="bsec">Alat</div>
+    <div class="seg" id="tools">
+      <button type="button" data-tool="place" class="on">Blok<kbd>1</kbd></button>
+      <button type="button" data-tool="erase">Hapus<kbd>2</kbd></button>
+      <button type="button" data-tool="spawn">Spawn<kbd>3</kbd></button>
+    </div>
+
+    <div class="bsec">Jenis blok</div>
+    <div class="seg" id="types">
+      <button type="button" data-type="solid" class="on">Padat</button>
+      <button type="button" data-type="lava">Lava</button>
+      <button type="button" data-type="checkpoint">Checkpoint</button>
+      <button type="button" data-type="finish">Finish</button>
+    </div>
+
+    <div class="bsec">Ukuran &middot; lebar &times; tinggi &times; dalam</div>
+    <div class="dims">
+      <input id="dw" type="number" min="1" max="60" value="4" inputmode="numeric">&times;
+      <input id="dh" type="number" min="1" max="60" value="4" inputmode="numeric">&times;
+      <input id="dd" type="number" min="1" max="60" value="4" inputmode="numeric">
+    </div>
+    <div class="seg presets" id="presets">
+      <button type="button" data-size="4,4,4">Kotak</button>
+      <button type="button" data-size="8,1,8">Lantai</button>
+      <button type="button" data-size="8,6,1">Dinding</button>
+      <button type="button" data-size="2,8,2">Pilar</button>
+    </div>
+
+    <div class="bsec">Warna blok</div>
+    <div class="sws" id="sw-block"></div>
+
+    <div class="bsec">Langit</div>
+    <div class="sws" id="sw-sky"></div>
+    <label class="check"><input type="checkbox" id="gground" checked> Tanah baseplate (matikan = void)</label>
+  </aside>
+
+  <div id="btop" class="panel">
+    <b>KLIK KIRI</b> pakai alat &nbsp;&middot;&nbsp; <b>KLIK KANAN + DRAG</b> putar kamera<br>
+    <b>WASD</b> geser &nbsp;&middot;&nbsp; <b>Q / E</b> turun / naik &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom<br>
+    <b>1 2 3</b> ganti alat &nbsp;&middot;&nbsp; <b>CTRL+Z</b> urungkan
+  </div>
+
+  <div id="bbar">
+    <button id="bTest" class="abtn primary" type="button"><span>Tes main</span><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg></button>
+    <button id="bSave" class="abtn plain" type="button"><span>Simpan .json</span><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
+    <button id="bNew" class="abtn ghost" type="button"><span>Baru</span></button>
+    <button id="bExit" class="abtn ghost" type="button"><span>Keluar</span></button>
+  </div>
+</div>
+
+<!-- ========== 4. HUD (saat main) ========== -->
 <div id="hud">
   <div id="topbar">
-    <button id="btnChat" class="ibtn" type="button" title="Chat (/)" aria-label="Chat">
+    <button id="btnChat" class="ibtn" type="button" title="Chat" aria-label="Chat">
       <svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H10l-4.5 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13h5"/></svg>
       <span id="badge" hidden>0</span>
     </button>
@@ -333,6 +359,7 @@
       <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
   </div>
+
   <div id="chat" class="panel" hidden>
     <div id="log"></div>
     <form id="chatForm" autocomplete="off">
@@ -341,23 +368,26 @@
       <button type="submit" title="Kirim" aria-label="Kirim"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </form>
   </div>
+
   <div id="players" class="panel">
     <h3>PEMAIN <span id="count">0</span></h3>
     <ul id="roster"></ul>
   </div>
+
   <div id="help">
     <b>WASD</b> / <b>PANAH</b> gerak &nbsp;&middot;&nbsp; <b>SPASI</b> lompat<br>
-    <b>DRAG</b> putar kamera &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom &nbsp;&middot;&nbsp; <b>/</b> chat &nbsp;&middot;&nbsp; <b>ESC</b> menu
+    <b>DRAG</b> putar kamera &nbsp;&middot;&nbsp; <b>SCROLL</b> zoom &nbsp;&middot;&nbsp; <b>ESC</b> menu
   </div>
-  <div id="toast"></div>
+
+  <div id="touch">
+    <div id="joy" aria-label="Joystick"><div id="joyKnob"></div></div>
+    <button id="jumpBtn" type="button" aria-label="Lompat"><svg viewBox="0 0 24 24"><path d="M12 19V6M6 11l6-6 6 6"/></svg></button>
+  </div>
 </div>
 
-<div id="mobileControls" aria-label="Kontrol mobile">
-  <div id="joystick" aria-label="Joystick gerak"><div id="joystickKnob"></div></div>
-  <button id="jumpButton" type="button" aria-label="Lompat">LOMPAT</button>
-</div>
+<div id="toast"></div>
 
-<!-- ========== 5. MENU ========== -->
+<!-- ========== MENU (Lanjut / Keluar) ========== -->
 <div id="menu" hidden>
   <div class="card">
     <div class="eyebrow">MENU</div>
@@ -379,46 +409,48 @@
   'use strict';
 
   // ============================================================
-  //  KONFIGURASI (satuan = "stud")
+  //  KONFIGURASI (satuan = "stud", kayak Roblox)
   // ============================================================
   const SPEED = 16;        // kecepatan jalan
   const JUMP_POWER = 52;   // kecepatan awal lompat (puncak ~6.4 stud)
   const GRAVITY = 196;
   const SEND_EVERY = 50;   // ms — kirim posisi ~20x/detik
-  // Alamat server multiplayer. '' = server yang sama dengan halaman ini.
-  // Tanpa server yang tersedia, game otomatis jalan dalam MODE SOLO.
+
+  // Alamat server multiplayer.
+  //   ''  = server yang sama dengan halaman ini (kalau index.html disajikan oleh server.js)
+  //   'https://nama-server-kamu.onrender.com' = kalau halaman ini di-host terpisah (mis. Vercel)
+  // Server socket.io HARUS jalan di hosting yang menjaga proses Node tetap hidup (bukan serverless).
   const SERVER_URL = '';
 
+  // batas game buatan (dipakai editor, file .json, dan server)
+  const MAX_BLOCKS = 800, XZ_LIM = 150, Y_MIN = -20, Y_MAX = 300, SIZE_MAX = 60;
+  const BLOCK_TYPES = ['solid', 'lava', 'checkpoint', 'finish'];
+
   const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const V3 = BABYLON.Vector3;
   const rnd = (r) => (Math.random() - 0.5) * 2 * r;
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
   const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const isTyping = () => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'); };
+  const hexToRgb = (hex) => { const n = parseInt(hex.slice(1), 16); return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]; };
+  const fmtTime = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+  const mq = (q) => !!(window.matchMedia && window.matchMedia(q).matches);
+
+  // websocket-only: satu koneksi tetap. (Polling butuh request berurutan ke instance yang sama -> itu yang bikin error 400.)
+  const socket = SERVER_URL ? io(SERVER_URL, { transports: ['websocket'] }) : io({ transports: ['websocket'] });
+
+  // HP / tablet: tampilkan joystick + tombol lompat
+  const coarse = mq('(pointer: coarse)');
+  const hasMouse = mq('(any-pointer: fine)');
+  if (coarse) document.body.classList.add('touch');
+  window.addEventListener('touchstart', () => document.body.classList.add('touch'), { once: true, passive: true });
 
   // ============================================================
-  //  KONEKSI SOCKET (opsional — tanpa server jadi mode solo)
-  // ============================================================
-  let socket = null, online = false, wasOnline = false, soloNoticed = false;
-  try {
-    socket = typeof io === 'function' ? (SERVER_URL ? io(SERVER_URL, { transports: ['websocket'] }) : io({ transports: ['websocket'] })) : null;
-  } catch (_) { socket = null; }
-  if (!socket) setTimeout(() => setConn('err', 'mode solo — server tidak tersedia'), 300);
-  else {
-    socket.on('connect', () => { wasOnline = true; online = true; setConn('ok', 'terhubung · multiplayer aktif'); });
-    socket.on('disconnect', () => { online = false; if (wasOnline) document.body.classList.add('offline'); });
-    socket.on('connect_error', () => { if (!soloNoticed) { soloNoticed = true; setConn('err', 'mode solo — server tidak tersedia'); } });
-  }
-  function setConn(cls, text) { const c = $('conn'); c.className = 'conn ' + (cls || ''); c.querySelector('span').textContent = text; }
-
-  // ============================================================
-  //  ENGINE, SCENE, KAMERA (game utama)
+  //  ENGINE, SCENE, KAMERA
   // ============================================================
   const canvas = $('game');
   const engine = new BABYLON.Engine(canvas, true);
   const scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color4(0.04, 0.05, 0.07, 1);
   scene.collisionsEnabled = true;
 
   const hemi = new BABYLON.HemisphericLight('hemi', new V3(0.2, 1, 0.1), scene);
@@ -427,19 +459,27 @@
   const sun = new BABYLON.DirectionalLight('sun', new V3(-0.4, -1, -0.3), scene);
   sun.intensity = 0.5;
 
-  const camera = new BABYLON.ArcRotateCamera('cam', -Math.PI / 2 + 0.4, 1.15, 13, new V3(0, 3, 0), scene);
+  const camera = new BABYLON.ArcRotateCamera('cam', -Math.PI / 2, 1.1, 30, new V3(0, 4, 0), scene);
   camera.minZ = 0.5;
   camera.maxZ = 1500;
-  camera.lowerRadiusLimit = 8;
-  camera.upperRadiusLimit = 70;
   camera.lowerBetaLimit = 0.2;
-  camera.upperBetaLimit = Math.PI / 2 - 0.05;
+  camera.upperBetaLimit = Math.PI / 2 - 0.05;   // jangan tembus tanah
   camera.wheelDeltaPercentage = 0.02;
-  camera.panningSensibility = 0;
+  camera.panningSensibility = 0;                // matikan geser kamera
   camera.angularSensibilityX = camera.angularSensibilityY = 700;
-  camera.inputs.removeByType('ArcRotateCameraKeyboardMoveInput');
+  camera.inputs.removeByType('ArcRotateCameraKeyboardMoveInput'); // WASD urusan kita
   camera.attachControl(canvas, true);
   canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  // 'play': semua tombol mouse / jari memutar kamera.  'build': klik kiri dipakai alat editor, kamera diputar tombol tengah/kanan.
+  function cameraMode(m) {
+    const build = m === 'build';
+    camera.lowerRadiusLimit = build ? 10 : 8;
+    camera.upperRadiusLimit = build ? 180 : 70;
+    const ptr = camera.inputs.attached.pointers;
+    if (ptr) ptr.buttons = build ? [1, 2] : [0, 1, 2];
+  }
+  cameraMode('play');
 
   function applySky(g) {
     const [r, gg, b] = g.sky;
@@ -453,15 +493,26 @@
   //  MATERIAL & TEKS 3D
   // ============================================================
   const matCache = {};
-  function mat(hex) {
-    if (!matCache[hex]) {
-      const m = new BABYLON.StandardMaterial('m' + hex, scene);
-      m.diffuseColor = BABYLON.Color3.FromHexString(hex);
-      m.specularColor = BABYLON.Color3.Black();
-      matCache[hex] = m;
-    }
+  function mat(hex) {                             // material dipakai bersama -> JANGAN di-dispose
+    if (!matCache[hex]) matCache[hex] = newMat(hex);
     return matCache[hex];
   }
+  function newMat(hex) {
+    const m = new BABYLON.StandardMaterial('m' + hex, scene);
+    m.diffuseColor = BABYLON.Color3.FromHexString(hex);
+    m.specularColor = BABYLON.Color3.Black();
+    return m;
+  }
+  function lavaMat(hex) {                         // lava = menyala sendiri, kelihatan beda dari blok biasa
+    const key = 'lava:' + hex;
+    if (!matCache[key]) {
+      const m = newMat(hex);
+      m.emissiveColor = BABYLON.Color3.FromHexString(hex).scale(0.6);
+      matCache[key] = m;
+    }
+    return matCache[key];
+  }
+
   function roundRect(c, x, y, w, h, r) {
     c.beginPath();
     c.moveTo(x + r, y);
@@ -471,6 +522,8 @@
     c.arcTo(x, y, x + w, y, r);
     c.closePath();
   }
+
+  // nametag & bubble chat digambar ke DynamicTexture
   function textPlane(lines, o) {
     const { W, H, w, h, px, bg, fg } = o;
     const tex = new BABYLON.DynamicTexture('txt', { width: W, height: H }, scene, true);
@@ -480,11 +533,13 @@
     c.fillStyle = bg;
     roundRect(c, 4, 4, W - 8, H - 8, H * 0.22);
     c.fill();
+
     const font = (s) => `800 ${s}px "JetBrains Mono", monospace`;
     let size = px;
     c.font = font(size);
     const widest = () => Math.max(...lines.map((l) => c.measureText(l).width));
     while (widest() > W - 48 && size > 14) { size -= 2; c.font = font(size); }
+
     c.fillStyle = fg;
     c.textAlign = 'center';
     c.textBaseline = 'middle';
@@ -492,20 +547,23 @@
     const y0 = H / 2 - ((lines.length - 1) * lh) / 2;
     lines.forEach((l, i) => c.fillText(l, W / 2, y0 + i * lh + size * 0.05));
     tex.update();
+
     const m = new BABYLON.StandardMaterial('txtMat', scene);
     m.emissiveTexture = tex;
     m.opacityTexture = tex;
     m.disableLighting = true;
     m.backFaceCulling = false;
+
     const p = BABYLON.MeshBuilder.CreatePlane('txtPlane', { width: w, height: h }, scene);
     p.material = m;
-    p.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+    p.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;   // selalu menghadap kamera
     p.isPickable = false;
     return p;
   }
 
   // ============================================================
-  //  AVATAR R6 — {shirt, pants, skin}, tinggi total 5 stud
+  //  AVATAR bergaya Roblox R6 — warna dari kostum {shirt, pants, skin}
+  //  (titik tengah = tengah badan, tinggi total 5 stud)
   // ============================================================
   let faceMat = null;
   function getFaceMat() {
@@ -525,35 +583,43 @@
     faceMat.specularColor = BABYLON.Color3.Black();
     return faceMat;
   }
+
+  // unique=true -> material milik avatar itu sendiri (dipakai preview lobby supaya warnanya bisa diubah langsung)
   function buildAvatar(c, unique = false) {
-    const newMat = (hex) => {
-      const m = new BABYLON.StandardMaterial('um' + hex, scene);
-      m.diffuseColor = BABYLON.Color3.FromHexString(hex);
-      m.specularColor = BABYLON.Color3.Black();
-      return m;
-    };
-    const mats = { shirt: unique ? newMat(c.shirt) : mat(c.shirt), pants: unique ? newMat(c.pants) : mat(c.pants), skin: unique ? newMat(c.skin) : mat(c.skin) };
+    const make = unique ? newMat : mat;
+    const mats = { shirt: make(c.shirt), pants: make(c.pants), skin: make(c.skin) };
     const root = new BABYLON.TransformNode('avatar', scene);
+
     const part = (w, h, d, material, x, y, z) => {
       const m = BABYLON.MeshBuilder.CreateBox('part', { width: w, height: h, depth: d }, scene);
-      m.material = material; m.parent = root; m.position.set(x, y, z); m.isPickable = false;
+      m.material = material;
+      m.parent = root;
+      m.position.set(x, y, z);
+      m.isPickable = false;
       return m;
     };
+    // anggota badan berputar dari sendi (pivot di atas), jadi bisa diayun
     const limb = (w, h, d, material, x, y, z) => {
       const pivot = new BABYLON.TransformNode('pivot', scene);
-      pivot.parent = root; pivot.position.set(x, y, z);
+      pivot.parent = root;
+      pivot.position.set(x, y, z);
       const m = BABYLON.MeshBuilder.CreateBox('limb', { width: w, height: h, depth: d }, scene);
-      m.material = material; m.parent = pivot; m.position.y = -h / 2; m.isPickable = false;
+      m.material = material;
+      m.parent = pivot;
+      m.position.y = -h / 2;
+      m.isPickable = false;
       return pivot;
     };
-    part(2, 2, 1, mats.shirt, 0, 0.5, 0);
-    const head = part(1.4, 1.2, 1.2, mats.skin, 0, 2.1, 0);
+
+    part(2, 2, 1, mats.shirt, 0, 0.5, 0);                     // badan
+    const head = part(1.4, 1.2, 1.2, mats.skin, 0, 2.1, 0);   // kepala
     const face = BABYLON.MeshBuilder.CreatePlane('face', { width: 1.0, height: 0.9 }, scene);
     face.material = getFaceMat();
     face.parent = head;
     face.position.set(0, -0.02, 0.63);
-    face.rotation.y = Math.PI;
+    face.rotation.y = Math.PI;                                 // hadap ke +Z (depan)
     face.isPickable = false;
+
     return {
       root, mats, unique,
       legL: limb(1, 2, 1, mats.pants, -0.5, -0.5, 0),
@@ -564,12 +630,14 @@
   }
 
   // ============================================================
-  //  DUNIA
+  //  DUNIA — semua mesh dunia dicatat supaya bisa dibuang saat ganti game
   // ============================================================
   let worldMeshes = [];
   const track = (m) => { worldMeshes.push(m); return m; };
   function clearWorld() { worldMeshes.forEach((m) => m.dispose()); worldMeshes = []; }
+  function untrackDispose(m) { worldMeshes = worldMeshes.filter((x) => x !== m); m.dispose(); }
 
+  // tekstur baseplate digambar pakai canvas — tanpa file gambar
   const gt = new BABYLON.DynamicTexture('groundTex', 256, scene, true);
   const gc = gt.getContext();
   gc.fillStyle = '#9aa0a8'; gc.fillRect(0, 0, 256, 256);
@@ -578,47 +646,63 @@
   for (const [sx, sy] of [[64, 64], [192, 64], [64, 192], [192, 192]]) { gc.beginPath(); gc.arc(sx, sy, 10, 0, Math.PI * 2); gc.fill(); }
   gt.update();
   gt.wrapU = gt.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-  gt.uScale = gt.vScale = 25;
+  gt.uScale = gt.vScale = 25;                    // 200 stud / 8 stud per ubin
   const groundMat = new BABYLON.StandardMaterial('groundMat', scene);
   groundMat.diffuseTexture = gt;
   groundMat.specularColor = BABYLON.Color3.Black();
 
   function makeGround() {
     const g = track(BABYLON.MeshBuilder.CreateBox('ground', { width: 200, height: 4, depth: 200 }, scene));
-    g.position.y = -2;
+    g.position.y = -2;                           // permukaan atas = y 0
     g.material = groundMat;
     g.checkCollisions = true;
+    return g;
   }
-  function block(x, y, z, w, h, d, hex, type, rx = 0, ry = 0, rz = 0) {
-    let b;
-    if (type === 'sphere') b = track(BABYLON.MeshBuilder.CreateSphere('block', { diameterX: w, diameterY: h, diameterZ: d, segments: 14 }, scene));
-    else b = track(BABYLON.MeshBuilder.CreateBox('block', { width: w, height: h, depth: d }, scene));
+
+  function block(x, y, z, w, h, d, hex) {         // y = titik tengah
+    const b = track(BABYLON.MeshBuilder.CreateBox('block', { width: w, height: h, depth: d }, scene));
     b.position.set(x, y, z);
-    b.rotation.set(rx * Math.PI / 180, ry * Math.PI / 180, rz * Math.PI / 180);
     b.material = mat(hex);
     b.checkCollisions = true;
     return b;
   }
 
+  // blok dari data {x,y,z,w,h,d,color,type}. solid=true -> dipakai main (bertabrakan); false -> di editor (bisa di-klik)
+  function makeBlockMesh(b, solid) {
+    const m = BABYLON.MeshBuilder.CreateBox('vb', { width: b.w, height: b.h, depth: b.d }, scene);
+    m.position.set(b.x, b.y, b.z);
+    m.material = b.type === 'lava' ? lavaMat(b.color) : mat(b.color);
+    m.checkCollisions = solid;
+    m.isPickable = !solid;
+    return m;
+  }
+
   // ---------- GAME 1: BASEPLATE ----------
   function buildBaseplate() {
     makeGround();
+    // tangga raksasa (anak tangga 2 stud otomatis terpanjat)
     ['#ff9a3d', '#ff8420', '#ff6a00', '#e85a00', '#c94b00'].forEach((c, i) => block(0, i + 1, 24 + i * 8, 12, 2 * (i + 1), 8, c));
+    // balok & platform melayang (mini obby)
     block(-22, 1.5, 8, 10, 3, 10, '#3498db');
     block(-30, 2.5, -6, 8, 5, 8, '#9b59b6');
     block(22, 1, -14, 12, 2, 12, '#2ecc71');
     block(30, 3, -30, 8, 1, 8, '#f1c40f');
     block(18, 6, -30, 8, 1, 8, '#e74c3c');
     block(6, 9, -30, 8, 1, 8, '#ff6a00');
-    return { respawn: () => ({ x: rnd(6), y: 8, z: rnd(6) }), tick() {} };
+    return {
+      respawn: () => ({ x: rnd(6), y: 8, z: rnd(6) }),
+      tick() {},
+    };
   }
 
   // ---------- GAME 2: SKY OBBY ----------
+  // 3 stage platform di langit. Tiap stage diakhiri pad checkpoint (oranye), pad terakhir = finish (emas).
   function buildObby() {
-    const cps = [];
+    const cps = [];                                            // daftar pad: start, checkpoint..., finish
     const t0 = performance.now();
     let cp = 0;
-    const plat = (x, top, z, w, d, hex) => block(x, top - 0.5, z, w, 1, d, hex);
+
+    const plat = (x, top, z, w, d, hex) => block(x, top - 0.5, z, w, 1, d, hex);   // top = permukaan atas
     const flag = (x, top, z, hex) => {
       const pole = track(BABYLON.MeshBuilder.CreateBox('pole', { width: 0.4, height: 6, depth: 0.4 }, scene));
       pole.position.set(x, top + 3, z);
@@ -627,19 +711,21 @@
       banner.position.set(x + 1.5, top + 5.2, z);
       banner.material = mat(hex);
     };
-    block(0, -1, 0, 24, 2, 24, '#ff9a3d');
+
+    block(0, -1, 0, 24, 2, 24, '#ff9a3d');                     // platform awal (permukaan y=0)
     cps.push({ x: 0, z: 0, top: 0, w: 24, d: 24 });
+
     const stages = [
-      { count: 5, size: 8, gap: 5, rise: 1, sway: 6, color: '#3498db' },
-      { count: 6, size: 7, gap: 5, rise: 2, sway: 9, color: '#9b59b6' },
+      { count: 5, size: 8, gap: 5,   rise: 1,   sway: 6, color: '#3498db' },
+      { count: 6, size: 7, gap: 5,   rise: 2,   sway: 9, color: '#9b59b6' },
       { count: 6, size: 5, gap: 5.5, rise: 1.5, sway: 8, color: '#e74c3c' },
     ];
-    let z = 12, top = 0;
+    let z = 12, top = 0;                                       // z = tepi depan platform sebelumnya
     stages.forEach((s, si) => {
       for (let i = 0; i < s.count; i++) {
         z += s.gap + s.size / 2;
         top += s.rise;
-        plat((i % 2 ? 1 : -1) * s.sway / 2, top, z, s.size, s.size, s.color);
+        plat((i % 2 ? 1 : -1) * s.sway / 2, top, z, s.size, s.size, s.color);   // zig-zag kiri-kanan
         z += s.size / 2;
       }
       const last = si === stages.length - 1;
@@ -651,7 +737,7 @@
       cps.push({ x: 0, z, top, w: size, d: size, finish: last });
       z += size / 2;
     });
-    const fmt = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+
     return {
       intro: 'capai bendera emas di ujung!',
       respawn() {
@@ -659,18 +745,112 @@
         const c = cps[cp];
         return cp === 0 ? { x: rnd(6), y: 4, z: rnd(6) } : { x: c.x, y: c.top + 3.5, z: c.z };
       },
-      tick(p, isGrounded) {
+      tick(p, isGrounded) {                                    // dipanggil tiap frame; deteksi pad checkpoint
         if (!isGrounded) return;
         const feet = p.y - 2.5;
         for (let i = cp + 1; i < cps.length; i++) {
           const c = cps[i];
           if (Math.abs(p.x - c.x) < c.w / 2 && Math.abs(p.z - c.z) < c.d / 2 && Math.abs(feet - c.top) < 1.5) {
             cp = i;
-            showToast(c.finish ? 'SELESAI · ' + fmt(performance.now() - t0) : `CHECKPOINT ${i}/${cps.length - 2}`, c.finish ? 4500 : 2200);
+            showToast(c.finish ? 'SELESAI · ' + fmtTime(performance.now() - t0) : `CHECKPOINT ${i}/${cps.length - 2}`, c.finish ? 4500 : 2200);
           }
         }
       },
     };
+  }
+
+  // ---------- GAME BUATAN (dari editor / file voxely_*.json) ----------
+  const clampN = (v, lo, hi, d) => (typeof v === 'number' && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d);
+  const half = (v) => Math.round(v * 2) / 2;
+  const cleanText = (s, n, d) => String(s ?? '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, n) || d;
+
+  // Semua data dari file dianggap TIDAK tepercaya: dicek tipe & dibatasi rentangnya sebelum dipakai.
+  function sanitizeGame(raw) {
+    if (!raw || typeof raw !== 'object' || raw.format !== 'voxely-game') throw new Error('bukan file game Voxely');
+    if (!Array.isArray(raw.blocks)) throw new Error('daftar blok tidak ada');
+    const sp = raw.spawn && typeof raw.spawn === 'object' ? raw.spawn : {};
+    const g = {
+      format: 'voxely-game',
+      version: 1,
+      name: cleanText(raw.name, 24, 'mygame'),
+      author: cleanText(raw.author, 16, 'guest'),
+      sky: isHex(raw.sky) ? raw.sky.toLowerCase() : '#8ec9ff',
+      ground: raw.ground !== false,
+      spawn: { x: half(clampN(sp.x, -XZ_LIM, XZ_LIM, 0)), y: half(clampN(sp.y, Y_MIN, Y_MAX, 0)), z: half(clampN(sp.z, -XZ_LIM, XZ_LIM, 0)) },
+      blocks: [],
+    };
+    for (const b of raw.blocks) {
+      if (g.blocks.length >= MAX_BLOCKS) break;
+      if (!b || typeof b !== 'object') continue;
+      g.blocks.push({
+        x: half(clampN(b.x, -XZ_LIM, XZ_LIM, 0)),
+        y: half(clampN(b.y, Y_MIN, Y_MAX, 0)),
+        z: half(clampN(b.z, -XZ_LIM, XZ_LIM, 0)),
+        w: half(clampN(b.w, 1, SIZE_MAX, 4)),
+        h: half(clampN(b.h, 1, SIZE_MAX, 4)),
+        d: half(clampN(b.d, 1, SIZE_MAX, 4)),
+        color: isHex(b.color) ? b.color.toLowerCase() : '#9aa0a8',
+        type: BLOCK_TYPES.includes(b.type) ? b.type : 'solid',
+      });
+    }
+    return g;
+  }
+
+  function cyrb53(str) {                          // hash kecil untuk id room
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+  }
+  // isi yang sama -> id room yang sama (nama & pembuat tidak ikut dihitung)
+  const gameId = (g) => 'custom-' + cyrb53(JSON.stringify([g.sky, g.ground, g.spawn, g.blocks])).toString(36).padStart(6, '0');
+
+  function buildCustom(cg) {
+    if (cg.ground) makeGround();
+    const specials = [];
+    for (const b of cg.blocks) {
+      track(makeBlockMesh(b, true));
+      if (b.type !== 'solid') specials.push({ type: b.type, x: b.x, z: b.z,
+        minX: b.x - b.w / 2, maxX: b.x + b.w / 2, minY: b.y - b.h / 2, maxY: b.y + b.h / 2, minZ: b.z - b.d / 2, maxZ: b.z + b.d / 2 });
+    }
+    const t0 = performance.now();
+    let cp = null, done = false;
+
+    return {
+      intro: specials.some((s) => s.type === 'finish') ? 'capai blok finish!' : null,
+      respawn() {
+        done = false;
+        showToast(cp ? 'kembali ke checkpoint' : 'ulang dari awal');
+        return cp ? { ...cp } : { x: cg.spawn.x, y: cg.spawn.y + 3.5, z: cg.spawn.z };
+      },
+      tick(p, isGrounded) {
+        const r = 1.2, m = 0.3, feet = p.y - 2.5, head = p.y + 2.5;
+        for (const s of specials) {
+          if (!(p.x + r > s.minX - m && p.x - r < s.maxX + m && p.z + r > s.minZ - m && p.z - r < s.maxZ + m)) continue;
+          if (s.type === 'lava') {
+            if (head > s.minY - m && feet < s.maxY + m) return 'respawn';          // sentuh lava = ulang
+          } else if (isGrounded && Math.abs(feet - s.maxY) < 0.6 && p.x > s.minX && p.x < s.maxX && p.z > s.minZ && p.z < s.maxZ) {
+            if (s.type === 'checkpoint' && !(cp && cp.x === s.x && cp.z === s.z && cp.y === s.maxY + 3.5)) {
+              cp = { x: s.x, y: s.maxY + 3.5, z: s.z };
+              showToast('CHECKPOINT');
+            } else if (s.type === 'finish' && !done) {
+              done = true;
+              showToast('SELESAI · ' + fmtTime(performance.now() - t0), 4500);
+            }
+          }
+        }
+      },
+    };
+  }
+
+  function makeCustomDef(cg) {
+    return { id: gameId(cg), custom: true, name: cg.name, author: cg.author, sky: hexToRgb(cg.sky), fog: false,
+      voidY: cg.ground ? -60 : -50, spawn: cg.spawn, cg, build: () => buildCustom(cg) };
   }
 
   const GAMES = {
@@ -680,44 +860,18 @@
       sky: [0.17, 0.16, 0.38], fog: true, voidY: -40, build: buildObby },
   };
 
-  // ---------- GAME BUATAN SENDIRI (dari Studio) ----------
-  let customGame = null;
-  try { customGame = JSON.parse(localStorage.getItem('voxely-mygame') || 'null'); } catch (_) {}
-  function customDefinition() {
-    return customGame && typeof customGame === 'object' && Array.isArray(customGame.blocks) ? customGame : null;
-  }
-  function buildCustomGame() {
-    const definition = customDefinition();
-    if (!definition) return buildBaseplate();
-    makeGround();
-    definition.blocks.forEach((b) => {
-      block(b.x, b.y, b.z, b.w || 4, b.h || 4, b.d || 4,
-        isHex(b.color) ? b.color : '#ff6a00',
-        b.type === 'sphere' ? 'sphere' : 'box',
-        b.rx || 0, b.ry || 0, b.rz || 0);
-    });
-    return { respawn: () => ({ x: 0, y: 8, z: 0 }), tick() {} };
-  }
-  function refreshCustomGame() {
-    if (!customDefinition()) return;
-    GAMES.mygame = { name: customGame.name || 'My Game', tag: 'buatanmu', desc: customGame.desc || 'Game buatan pemain Voxely.', sky: customGame.sky || [0.1, 0.2, 0.3], fog: false, voidY: -60, build: buildCustomGame };
-  }
-  refreshCustomGame();
-  function hexToSky(hex) {
-    const n = parseInt(hex.slice(1), 16);
-    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
-  }
-
   // ============================================================
-  //  ENTITAS PEMAIN
+  //  ENTITAS PEMAIN (lokal & remote)
   // ============================================================
-  const others = {};
-  const roster = {};
-  let me = null, myId = null;
+  const others = {};      // id -> entitas pemain lain
+  const roster = {};      // id -> info pemain (untuk daftar pemain)
+  let me = null;          // entitas kita sendiri
+  let myId = null;
 
   function createEntity(info, isLocal) {
     let root;
     if (isLocal) {
+      // kotak tak terlihat yang bertugas sebagai "badan fisik" (collision ellipsoid)
       root = BABYLON.MeshBuilder.CreateBox('me', { size: 1 }, scene);
       root.isVisible = false;
       root.ellipsoid = new V3(1.2, 2.5, 1.2);
@@ -725,39 +879,49 @@
       root = new BABYLON.TransformNode('p_' + info.id, scene);
     }
     root.position.set(info.x, info.y, info.z);
+
     const av = buildAvatar(info);
     av.root.parent = root;
     av.root.rotation.y = info.ry || 0;
+
     const nameTag = textPlane([info.name], {
       W: 512, H: 128, w: 6, h: 1.5, px: 64,
       bg: 'rgba(0,0,0,.68)', fg: isLocal ? '#ff8a33' : '#ffffff',
     });
     nameTag.parent = root;
     nameTag.position.y = 3.9;
+
     return {
       root, avatar: av.root, nameTag,
       legL: av.legL, legR: av.legR, armL: av.armL, armR: av.armR,
-      target: root.position.clone(), ry: info.ry || 0, tRy: info.ry || 0, swing: 0,
+      target: root.position.clone(), ry: info.ry || 0, swing: 0,
       bubble: null, bubbleTimer: 0,
     };
   }
+
   function removeEntity(e) {
     if (!e) return;
     clearTimeout(e.bubbleTimer);
+    // material label/bubble milik sendiri -> boleh dibuang; material avatar dipakai bersama -> jangan
     e.nameTag.dispose(false, true);
     if (e.bubble) e.bubble.dispose(false, true);
     e.root.dispose();
   }
+
   function say(e, text) {
     clearTimeout(e.bubbleTimer);
     if (e.bubble) e.bubble.dispose(false, true);
     const lines = [text.slice(0, 24)];
     if (text.length > 24) lines.push(text.length > 48 ? text.slice(24, 47) + '…' : text.slice(24));
-    e.bubble = textPlane(lines, { W: 1024, H: 256, w: 9, h: 2.25, px: 84, bg: 'rgba(255,255,255,.96)', fg: '#111111' });
+    e.bubble = textPlane(lines, {
+      W: 1024, H: 256, w: 9, h: 2.25, px: 84,
+      bg: 'rgba(255,255,255,.96)', fg: '#111111',
+    });
     e.bubble.parent = e.root;
     e.bubble.position.y = 6;
     e.bubbleTimer = setTimeout(() => { e.bubble.dispose(false, true); e.bubble = null; }, 5000);
   }
+
   function animate(e, walking, t) {
     const target = walking ? Math.sin(t * 12) * 0.9 : 0;
     e.swing += (target - e.swing) * 0.3;
@@ -766,20 +930,37 @@
     e.armL.rotation.x = -e.swing;
     e.armR.rotation.x = e.swing;
   }
+
   function lerpAngle(a, b, t) {
     const d = ((((b - a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
     return a + d * t;
   }
 
   // ============================================================
-  //  STATE & KOSTUM
+  //  STATE: login -> lobby -> (playing | building)
+  //  mode: 'online' (room socket.io) | 'test' (tes main dari editor, tanpa server)
   // ============================================================
   let state = 'login';
+  let mode = 'online';
   function setState(s) { state = s; document.body.dataset.state = s; }
+
   let playerName = '';
-  let activeGame = null, activeApi = null;
+  let activeGame = null;      // definisi game yang sedang dimainkan
+  let activeApi = null;       // { respawn, tick, intro } dari game itu
+  let pendingDef = null;      // game yang baru dipilih, menunggu 'init' dari server
   let joining = false;
 
+  // ---------- toast ----------
+  let toastTimer = 0;
+  function showToast(text, ms = 2500) {
+    const t = $('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  // ---------- kostum ----------
   const DEFAULT_COSTUME = { shirt: '#ff6a00', pants: '#3b5b92', skin: '#f6d55c' };
   const PALETTES = {
     shirt: ['#ff6a00', '#e74c3c', '#ff5fa2', '#f1c40f', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6', '#ecf0f1', '#2c2c2c'],
@@ -792,1207 +973,795 @@
     for (const k in costume) if (isHex(saved[k])) costume[k] = saved[k].toLowerCase();
   } catch (_) {}
 
-  let preview = null, podium = null;
+  let preview = null;         // avatar contoh di lobby (material sendiri, warna diubah langsung)
   function ensurePreview() {
     if (preview) return;
     preview = buildAvatar(costume, true);
     preview.root.position.set(0, 2.5, 0);
-    podium = BABYLON.MeshBuilder.CreateBox('podium', { width: 7, height: 1, depth: 7 }, scene);
-    podium.position.y = -0.5;
-    podium.material = mat('#32363f');
-    podium.isPickable = false;
   }
   function disposePreview() {
     if (!preview) return;
     preview.root.dispose();
     Object.values(preview.mats).forEach((m) => m.dispose());
     preview = null;
-    if (podium) { podium.dispose(); podium = null; }
   }
+
   function setColor(part, hex) {
     costume[part] = hex;
     try { localStorage.setItem('voxely-costume', JSON.stringify(costume)); } catch (_) {}
     if (preview) preview.mats[part].diffuseColor = BABYLON.Color3.FromHexString(hex);
     refreshSwatches();
   }
+
+  // deretan kotak warna + kotak "warna bebas" (color picker). Mengembalikan fungsi refresh.
+  function swatchRow(box, colors, get, set) {
+    colors.forEach((hex) => {
+      const b = el('button', 'sw');
+      b.type = 'button';
+      b.style.background = hex;
+      b.dataset.hex = hex;
+      b.title = hex;
+      b.addEventListener('click', () => set(hex));
+      box.append(b);
+    });
+    const custom = el('input', 'sw custom');
+    custom.type = 'color';
+    custom.title = 'warna bebas';
+    custom.addEventListener('input', () => set(custom.value));
+    box.append(custom);
+    return function refresh() {
+      box.querySelectorAll('button.sw').forEach((b) => b.classList.toggle('on', b.dataset.hex === get()));
+      custom.value = get();
+      custom.classList.toggle('on', !colors.includes(get()));
+    };
+  }
+
+  const costumeRefresh = [];
+  function refreshSwatches() { costumeRefresh.forEach((f) => f()); }
   function buildCostumeUI() {
-    for (const part in PALETTES) {
-      const box = $('sw-' + part);
-      PALETTES[part].forEach((hex) => {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'sw'; b.style.background = hex;
-        b.dataset.hex = hex; b.title = hex; b.setAttribute('aria-label', part + ' ' + hex);
-        b.addEventListener('click', () => setColor(part, hex));
-        box.append(b);
-      });
-      const custom = document.createElement('input');
-      custom.type = 'color'; custom.className = 'sw custom'; custom.title = 'warna bebas';
-      custom.addEventListener('input', () => setColor(part, custom.value));
-      box.append(custom);
-    }
+    for (const part in PALETTES) costumeRefresh.push(swatchRow($('sw-' + part), PALETTES[part], () => costume[part], (hex) => setColor(part, hex)));
     $('randomize').addEventListener('click', () => { for (const part in PALETTES) setColor(part, pick(PALETTES[part])); });
     refreshSwatches();
   }
-  function refreshSwatches() {
-    for (const part in PALETTES) {
-      const box = $('sw-' + part);
-      box.querySelectorAll('button.sw').forEach((b) => b.classList.toggle('on', b.dataset.hex === costume[part]));
-      const custom = box.querySelector('input.sw');
-      custom.value = costume[part];
-      custom.classList.toggle('on', !PALETTES[part].includes(costume[part]));
-    }
+
+  // ---------- kartu game ----------
+  let lastCounts = {};
+  function createCard(o) {                        // o: { id, thumb, title, tag, desc, onClick }
+    const b = el('button', 'game');
+    b.type = 'button';
+    const info = el('div', 'info');
+    const title = el('div', 'title');
+    title.append(el('span', '', o.title), el('em', '', o.tag));
+    const foot = el('div', 'foot');
+    const cnt = el('span', 'cnt');
+    const num = el('b', '', String(lastCounts[o.id] || 0));
+    num.dataset.count = o.id;
+    cnt.append(el('i'), num, ' online');
+    foot.append(cnt, el('span', 'go', 'MAIN →'));
+    info.append(title, el('p', '', o.desc), foot);
+    b.append(el('div', 'thumb ' + o.thumb), info);
+    b.addEventListener('click', o.onClick);
+    return b;
   }
 
   function buildGameCards() {
-    const box = $('games');
-    box.replaceChildren();
     for (const id in GAMES) {
       const g = GAMES[id];
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'game';
-      b.innerHTML =
-        `<div class="thumb ${id}"></div>` +
-        `<div class="info"><div class="title"><span>${esc(g.name)}</span><em>${esc(g.tag)}</em></div>` +
-        `<p>${esc(g.desc)}</p>` +
-        `<div class="foot"><span class="cnt"><i></i><b data-count="${id}">0</b> online</span><span class="go">MAIN &rarr;</span></div></div>`;
-      b.addEventListener('click', () => joinGame(id));
-      box.append(b);
-    }
-    $('gameCount').textContent = Object.keys(GAMES).length;
-  }
-  function updateCounts(counts) {
-    for (const id in counts) {
-      document.querySelectorAll(`[data-count="${id}"]`).forEach((el) => { el.textContent = counts[id]; });
+      $('games').append(createCard({ id, thumb: id, title: g.name, tag: g.tag, desc: g.desc, onClick: () => joinGame(id, g) }));
     }
   }
 
-  // ============================================================
-  //  VOXELY STUDIO v2 — editor mini game
-  //  ARROW = geser / putar / skala sesuai tool · Q/E putar cepat
-  //  gizmo cincin rotasi · snap · undo/redo · duplikat · explorer
-  // ============================================================
-  const Studio = (() => {
-    const r2 = (v) => Math.round(v * 100) / 100;
-    const deg2rad = (d) => (d * Math.PI) / 180;
-    const rad2deg = (r) => (r * 180) / Math.PI;
-    const hex2c = (h) => BABYLON.Color3.FromHexString(h);
-    const skyToHex = (s) => (Array.isArray(s) ? '#' + s.map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255).toString(16).padStart(2, '0')).join('') : '#253141');
-    const mk = (cls, html) => { const d = document.createElement('div'); if (cls) d.className = cls; if (html != null) d.innerHTML = html; return d; };
-    const AXES = { x: new V3(1, 0, 0), y: new V3(0, 1, 0), z: new V3(0, 0, 1) };
-    const RKEY = { x: 'rx', y: 'ry', z: 'rz' };
-    const BLOCK_COLORS = ['#ff6a00', '#e74c3c', '#f1c40f', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6', '#ecf0f1', '#4a4f5a', '#23262d'];
-    const SKY_PRESETS = ['#253141', '#18304d', '#12333a', '#2b2860', '#3a1f2b', '#4a4433', '#565d68', '#0f1013'];
-    const TOOL_HINTS = {
-      move: 'MODE MOVE · ARROW = GESER (IKUT ARAH KAMERA) · SHIFT+ATAS/BAWAH = NAIK/TURUN',
-      rotate: 'MODE ROTATE · ARROW = PUTAR · SHIFT+KIRI/KANAN = SUMBU Z · SERET CINCIN WARNA · Q / E CEPAT',
-      scale: 'MODE SCALE · ARROW = UBAH UKURAN · SHIFT+ATAS/BAWAH = SERAGAM',
-    };
+  // game buatan yang dimuat dari file .json
+  function showCustomCard(def) {
+    const box = $('customGames');
+    box.replaceChildren(createCard({
+      id: def.id, thumb: 'custom', title: def.name, tag: def.cg.blocks.length + ' blok',
+      desc: 'oleh ' + def.author + ' · pemain yang memuat file yang sama masuk ke room yang sama',
+      onClick: () => joinGame(def.id, def),
+    }));
+  }
 
-    let eng = null, sc = null, cam = null, hl = null, ringRoot = null, ringMeshes = null;
-    let blocks = [], meshes = [], selected = -1, uid = 1;
-    let tool = 'move', snapOn = true, isOpen = false;
-    let world = { name: 'My Game', desc: 'Dunia buatan sendiri dari Voxely Studio.', sky: '#253141' };
-    let nameCount = { box: 0, sphere: 0 };
-    let history = [], future = [], lastCommitAt = 0;
-    let drag = null, flashT = 0;
-    const matCacheS = {};
-
-    const root = $('studio');
-    root.innerHTML = `
-    <div class="st-bar">
-      <div class="st-brand"><b>VOXELY <i>STUDIO</i></b><span>BUILDER v2</span></div>
-      <span class="st-sep"></span>
-      <button class="st-btn on" data-tool="move" type="button" title="Geser (V)"><svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg><span class="lbl">MOVE</span><span class="st-kbd">V</span></button>
-      <button class="st-btn" data-tool="rotate" type="button" title="Putar (R)"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-3.2-6.6"/><path d="M17.5 2.5v3.4h3.4"/></svg><span class="lbl">ROTATE</span><span class="st-kbd">R</span></button>
-      <button class="st-btn" data-tool="scale" type="button" title="Skala (S)"><svg viewBox="0 0 24 24"><path d="M3.5 20.5l6-6M3.5 20.5v-4.5M3.5 20.5H8M20.5 3.5l-6 6M20.5 3.5V8M20.5 3.5H16"/></svg><span class="lbl">SCALE</span><span class="st-kbd">S</span></button>
-      <span class="st-sep"></span>
-      <button class="st-btn on" id="stSnap" type="button" title="Snap ke grid (G)"><svg viewBox="0 0 24 24"><path d="M4 4h4.5v4.5H4zM15.5 4H20v4.5h-4.5zM4 15.5h4.5V20H4zM15.5 15.5H20V20h-4.5z"/></svg><span class="lbl">SNAP</span><span class="st-kbd">G</span></button>
-      <span class="st-sep"></span>
-      <button class="st-btn" id="stAddCube" type="button" title="Tambah kubus"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg><span class="lbl">CUBE</span></button>
-      <button class="st-btn" id="stAddSphere" type="button" title="Tambah bola"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="8.5" ry="3.4"/></svg><span class="lbl">SPHERE</span></button>
-      <button class="st-btn" id="stDup" type="button" title="Duplikat (Ctrl+D)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg><span class="lbl">DUP</span><span class="st-kbd">CTRL D</span></button>
-      <button class="st-btn danger" id="stDel" type="button" title="Hapus (Del)"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg><span class="lbl">DEL</span><span class="st-kbd">DEL</span></button>
-      <span class="st-sep"></span>
-      <button class="st-btn" id="stUndo" type="button" title="Undo (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M8.5 13.5L4 9l4.5-4.5"/><path d="M4 9h9.5a6.5 6.5 0 0 1 0 13H10"/></svg></button>
-      <button class="st-btn" id="stRedo" type="button" title="Redo (Ctrl+Y)"><svg viewBox="0 0 24 24"><path d="M15.5 13.5L20 9l-4.5-4.5"/><path d="M20 9h-9.5a6.5 6.5 0 0 0 0 13H14"/></svg></button>
-      <span class="st-spacer"></span>
-      <button class="st-btn" id="stFocus" type="button" title="Fokus ke objek (F)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5V6M12 18v3.5M2.5 12H6M18 12h3.5"/></svg><span class="st-kbd">F</span></button>
-      <button class="st-btn primary" id="stSave" type="button"><svg viewBox="0 0 24 24"><path d="M7.5 5l11 7-11 7z"/></svg><span class="lbl">SAVE &amp; TEST</span></button>
-      <button class="st-btn danger" id="stExit" type="button" title="Keluar studio"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="st-body">
-      <aside class="st-side l">
-        <div class="st-head"><span>Explorer</span><b id="stCount">0</b></div>
-        <div class="st-list" id="stTree"></div>
-      </aside>
-      <section class="st-view">
-        <canvas id="stCanvas"></canvas>
-        <div class="st-hint"><span><b>DRAG</b> ORBIT · <b>KLIK KANAN</b> PAN · <b>SCROLL</b> ZOOM · <b>KLIK</b> PILIH</span><br><span id="stToolHint"></span></div>
-        <div class="st-views">
-          <button class="st-btn on" data-view="iso" type="button">ISO</button>
-          <button class="st-btn" data-view="top" type="button">TOP</button>
-          <button class="st-btn" data-view="side" type="button">SIDE</button>
-        </div>
-        <div class="st-empty" id="stEmpty" hidden>VIEWPORT KOSONG<br>tambah objek lewat tombol <b>CUBE</b> / <b>SPHERE</b></div>
-        <div class="st-toast" id="stToast"></div>
-        <div class="st-badge-sel" id="stSel"></div>
-      </section>
-      <aside class="st-side r">
-        <div class="st-head"><span>Properties</span><b id="stSelTag">DUNIA</b></div>
-        <div class="st-props" id="stProps"></div>
-      </aside>
-    </div>
-    <div class="st-bottom">
-      <div class="st-console">
-        <div class="st-head"><span>Console</span><span>BABYLON.JS</span></div>
-        <div id="stLog"></div>
-      </div>
-      <div class="st-keys">
-        <h5>Mode Move <kbd>V</kbd></h5>
-        <div><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> geser X/Z (ikut kamera) · <kbd>SHIFT</kbd>+<kbd>↑↓</kbd> naik/turun <b>Y</b></div>
-        <h5>Mode Rotate <kbd>R</kbd></h5>
-        <div><kbd>←→</kbd> putar <b>Y</b> · <kbd>↑↓</kbd> putar <b>X</b> · <kbd>SHIFT</kbd>+<kbd>←→</kbd> putar <b>Z</b></div>
-        <div>atau seret <b>cincin sumbu</b> di viewport</div>
-        <h5>Mode Scale <kbd>S</kbd></h5>
-        <div><kbd>←→</kbd> lebar <b>W</b> · <kbd>↑↓</kbd> tinggi <b>H</b> · <kbd>SHIFT</kbd>+<kbd>↑↓</kbd> seragam</div>
-        <h5>Cepat</h5>
-        <div><kbd>Q</kbd><kbd>E</kbd> putar -15/+15 · <kbd>G</kbd> snap · <kbd>F</kbd> fokus · <kbd>ALT</kbd> halus</div>
-        <div><kbd>DEL</kbd> hapus · <kbd>CTRL</kbd><kbd>D</kbd> duplikat · <kbd>CTRL</kbd><kbd>Z/Y</kbd> undo/redo</div>
-      </div>
-    </div>
-    <div class="st-status">
-      <div class="lead">STUDIO</div>
-      <div>TOOL <b id="ssTool">MOVE</b></div>
-      <div>SEL <b id="ssSel">—</b></div>
-      <div>POS <b id="ssPos">—</b></div>
-      <div>ROT <b id="ssRot">—</b></div>
-      <div>SNAP <b id="ssSnap">ON · 1ST / 15°</b></div>
-      <div>BLOK <b id="ssBlocks">0</b></div>
-    </div>`;
-
-    const E = {
-      canvas: $('stCanvas'), tree: $('stTree'), count: $('stCount'), props: $('stProps'),
-      empty: $('stEmpty'), log: $('stLog'), toolHint: $('stToolHint'), toast: $('stToast'),
-      selBadge: $('stSel'), selTag: $('stSelTag'), snapBtn: $('stSnap'),
-      ssTool: $('ssTool'), ssSel: $('ssSel'), ssPos: $('ssPos'), ssRot: $('ssRot'),
-      ssSnap: $('ssSnap'), ssBlocks: $('ssBlocks'),
-    };
-    E.toolBtns = [...root.querySelectorAll('[data-tool]')];
-    E.viewBtns = [...root.querySelectorAll('[data-view]')];
-
-    function mat2(hex) {
-      if (!matCacheS[hex]) {
-        const m = new BABYLON.StandardMaterial('sm' + hex, sc);
-        m.diffuseColor = hex2c(hex);
-        m.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
-        matCacheS[hex] = m;
-      }
-      return matCacheS[hex];
-    }
-    function snapPos(v) { return snapOn ? Math.round(v) : r2(v); }
-    function snapRot(v) { const n = ((v % 360) + 540) % 360 - 180; return snapOn ? Math.round(n / 15) * 15 : Math.round(n); }
-    function snapSize(v) { return Math.max(0.5, snapOn ? Math.round(v * 2) / 2 : r2(v)); }
-    function log(msg, type = 'i') {
-      const t = new Date();
-      const ts = [t.getHours(), t.getMinutes(), t.getSeconds()].map((n) => String(n).padStart(2, '0')).join(':');
-      const tag = { i: 'INFO', o: 'STUDIO', w: 'WARN', e: 'ERR' }[type] || 'INFO';
-      const p = document.createElement('p');
-      p.innerHTML = '<span class="t">' + ts + '</span><span class="' + type + '">' + tag + '</span> ' + esc(msg);
-      E.log.append(p);
-      while (E.log.children.length > 80) E.log.firstChild.remove();
-      E.log.scrollTop = 1e9;
-    }
-    function flash(msg) {
-      E.toast.textContent = msg;
-      E.toast.classList.add('show');
-      clearTimeout(flashT);
-      flashT = setTimeout(() => E.toast.classList.remove('show'), 1500);
-    }
-
-    function ensureScene() {
-      if (sc) return;
-      eng = new BABYLON.Engine(E.canvas, true, { stencil: true });
-      sc = new BABYLON.Scene(eng);
-      const hemi2 = new BABYLON.HemisphericLight('sth', new V3(0.3, 1, 0.2), sc);
-      hemi2.intensity = 0.9; hemi2.groundColor = new BABYLON.Color3(0.3, 0.32, 0.38);
-      const sun2 = new BABYLON.DirectionalLight('sts', new V3(-0.5, -1, -0.35), sc);
-      sun2.intensity = 0.55;
-      cam = new BABYLON.ArcRotateCamera('stc', -Math.PI / 2.4, 1.02, 42, new V3(0, 3, 0), sc);
-      cam.minZ = 0.2; cam.maxZ = 900;
-      cam.lowerRadiusLimit = 5; cam.upperRadiusLimit = 160;
-      cam.lowerBetaLimit = 0.03; cam.upperBetaLimit = Math.PI / 2 - 0.02;
-      cam.wheelDeltaPercentage = 0.01;
-      cam.panningSensibility = 900;
-      cam.inputs.removeByType('ArcRotateCameraKeyboardMoveInput'); // ARROW milik blok
-      cam.attachControl(E.canvas, true);
-      E.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-      hl = new BABYLON.HighlightLayer('sthl', sc);
-      hl.innerGlow = false;
-      // lantai grid studio
-      const gt2 = new BABYLON.DynamicTexture('stgrid', 128, sc, true);
-      const g2 = gt2.getContext();
-      g2.fillStyle = '#191b20'; g2.fillRect(0, 0, 128, 128);
-      g2.strokeStyle = '#23262d'; g2.lineWidth = 2; g2.strokeRect(0, 0, 128, 128);
-      g2.strokeStyle = '#2a2e36'; g2.beginPath(); g2.moveTo(64, 0); g2.lineTo(64, 128); g2.moveTo(0, 64); g2.lineTo(128, 64); g2.stroke();
-      gt2.update();
-      gt2.wrapU = gt2.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
-      gt2.uScale = gt2.vScale = 100;
-      const gm = new BABYLON.StandardMaterial('stgm', sc);
-      gm.diffuseTexture = gt2; gm.specularColor = BABYLON.Color3.Black();
-      const ground = BABYLON.MeshBuilder.CreateGround('stground', { width: 400, height: 400 }, sc);
-      ground.material = gm;
-      ground.isPickable = false;
-      // cincin rotasi (gizmo)
-      ringRoot = new BABYLON.TransformNode('stringroot', sc);
-      const mkRing = (k, color) => {
-        const t = BABYLON.MeshBuilder.CreateTorus('str' + k, { diameter: 6, thickness: 0.18, tessellation: 56 }, sc);
-        const m = new BABYLON.StandardMaterial('strm' + k, sc);
-        m.emissiveColor = hex2c(color); m.diffuseColor = BABYLON.Color3.Black(); m.specularColor = BABYLON.Color3.Black();
-        t.material = m; t.parent = ringRoot; t.metadata = { ring: k }; t.setEnabled(false);
-        return t;
-      };
-      ringMeshes = { x: mkRing('x', '#ff5c5c'), y: mkRing('y', '#57d98b'), z: mkRing('z', '#5eb8ff') };
-      ringMeshes.x.rotation.z = Math.PI / 2;
-      ringMeshes.z.rotation.x = Math.PI / 2;
-      sc.onPointerObservable.add(onPointer);
-      window.addEventListener('pointerup', () => {
-        if (!drag) return;
-        if (drag.kind !== 'void') cam.attachControl(E.canvas, true);
-        drag = null;
-      });
-      window.addEventListener('resize', () => { if (isOpen) eng.resize(); });
-    }
-
-    function planeHit(y) {
-      const ray = sc.createPickingRay(sc.pointerX, sc.pointerY, BABYLON.Matrix.Identity(), cam);
-      const d = ray.intersectsPlane(BABYLON.Plane.FromPositionAndNormal(new V3(0, y, 0), AXES.y));
-      return d !== null && d > 0.001 ? ray.origin.add(ray.direction.scale(d)) : null;
-    }
-    function planeAngle(axis, b) {
-      const ray = sc.createPickingRay(sc.pointerX, sc.pointerY, BABYLON.Matrix.Identity(), cam);
-      const d = ray.intersectsPlane(BABYLON.Plane.FromPositionAndNormal(new V3(b.x, b.y, b.z), AXES[axis]));
-      if (d === null || d <= 0.001) return null;
-      const v = ray.origin.add(ray.direction.scale(d)).subtract(new V3(b.x, b.y, b.z));
-      if (axis === 'y') return Math.atan2(v.x, v.z);
-      if (axis === 'x') return Math.atan2(v.z, v.y);
-      return Math.atan2(v.y, v.x);
-    }
-    function screenAxes() {
-      if (!cam) return { f: [0, 1], r: [1, 0] };
-      const d = cam.getForwardRay().direction;
-      let fx = d.x, fz = d.z;
-      const l = Math.hypot(fx, fz);
-      if (l < 0.05) return { f: [0, 1], r: [1, 0] };
-      fx /= l; fz /= l;
-      if (Math.abs(fx) > Math.abs(fz)) return { f: [Math.sign(fx), 0], r: [0, -Math.sign(fx)] };
-      return { f: [0, Math.sign(fz)], r: [Math.sign(fz), 0] };
-    }
-
-    function onPointer(pi) {
-      if (!isOpen) return;
-      const T = BABYLON.PointerEventTypes;
-      if (pi.type === T.POINTERDOWN) {
-        if (pi.event.button !== 0) { drag = null; return; }
-        const pk = sc.pick(sc.pointerX, sc.pointerY, (m) => m.metadata && (m.metadata.ring || m.metadata.bi !== undefined));
-        if (pk && pk.hit && pk.pickedMesh.metadata.ring && tool === 'rotate' && selected >= 0) {
-          cam.detachControl();
-          E.canvas.style.cursor = 'grabbing';
-          drag = { kind: 'ring', bi: selected, axis: pk.pickedMesh.metadata.ring, a0: planeAngle(pk.pickedMesh.metadata.ring, blocks[selected]), moved: 0, sx: sc.pointerX, sy: sc.pointerY, dirty: false };
-          return;
-        }
-        if (pk && pk.hit && pk.pickedMesh.metadata.bi !== undefined) {
-          const bi = pk.pickedMesh.metadata.bi;
-          const b = blocks[bi];
-          if (bi !== selected) select(bi);
-          cam.detachControl();
-          E.canvas.style.cursor = 'grabbing';
-          if (tool === 'move') {
-            const p = planeHit(b.y - b.h / 2);
-            drag = { kind: 'move', bi, ox: p ? b.x - p.x : 0, oz: p ? b.z - p.z : 0, moved: 0, sx: sc.pointerX, sy: sc.pointerY, dirty: false };
-          } else if (tool === 'rotate') {
-            drag = { kind: 'rotY', bi, axis: 'y', a0: planeAngle('y', b), moved: 0, sx: sc.pointerX, sy: sc.pointerY, dirty: false };
-          } else {
-            drag = { kind: 'scale', bi, y0: sc.pointerY, w: b.w, h: b.h, d: b.d, moved: 0, sx: sc.pointerX, dirty: false };
-          }
-          return;
-        }
-        drag = { kind: 'void', moved: 0, sx: sc.pointerX, sy: sc.pointerY };
-        return;
-      }
-      if (pi.type === T.POINTERMOVE) {
-        if (drag) {
-          drag.moved = Math.max(drag.moved, Math.hypot(sc.pointerX - drag.sx, sc.pointerY - drag.sy));
-          const b = blocks[drag.bi];
-          if (!b) return;
-          if (drag.kind === 'move') {
-            const p = planeHit(b.y - b.h / 2);
-            if (p) {
-              if (!drag.dirty) { commit('move'); drag.dirty = true; }
-              b.x = snapPos(p.x + drag.ox);
-              b.z = snapPos(p.z + drag.oz);
-              sync(drag.bi);
-            }
-          } else if (drag.kind === 'ring' || drag.kind === 'rotY') {
-            const a = planeAngle(drag.axis, b);
-            if (a !== null) {
-              if (drag.a0 === null) { drag.a0 = a; return; }
-              if (!drag.dirty) { commit('rot'); drag.dirty = true; }
-              let d = a - drag.a0;
-              if (d > Math.PI) d -= Math.PI * 2; else if (d < -Math.PI) d += Math.PI * 2;
-              drag.a0 = a;
-              b[RKEY[drag.axis]] = snapRot(b[RKEY[drag.axis]] + rad2deg(d));
-              sync(drag.bi);
-            }
-          } else if (drag.kind === 'scale') {
-            if (!drag.dirty) { commit('scale'); drag.dirty = true; }
-            const f = Math.min(6, Math.max(0.15, 1 - (sc.pointerY - drag.y0) * 0.008));
-            b.w = snapSize(drag.w * f); b.h = snapSize(drag.h * f); b.d = snapSize(drag.d * f);
-            sync(drag.bi);
-          }
-        } else {
-          const pk = sc.pick(sc.pointerX, sc.pointerY, (m) => m.metadata && (m.metadata.ring || m.metadata.bi !== undefined));
-          E.canvas.style.cursor = pk && pk.hit ? (tool === 'move' ? 'grab' : 'crosshair') : 'default';
-        }
-        return;
-      }
-      if (pi.type === T.POINTERUP && drag) {
-        if (drag.kind === 'void') {
-          if (drag.moved < 5) select(-1);
-        } else {
-          cam.attachControl(E.canvas, true);
-          E.canvas.style.cursor = 'default';
-          if (drag.dirty && blocks[drag.bi]) log(blocks[drag.bi].name + ' diedit (' + drag.kind + ')', 'i');
-        }
-        drag = null;
-      }
-    }
-
-    function sync(i) {
-      const b = blocks[i], m = meshes[i];
-      if (!b || !m) return;
-      m.position.set(b.x, b.y, b.z);
-      m.rotation.set(deg2rad(b.rx), deg2rad(b.ry), deg2rad(b.rz));
-      m.scaling.set(b.w, b.h, b.d);
-      m.material = mat2(b.color);
-      if (i === selected) updateRings();
-      syncProps();
-      refreshStatus();
-    }
-    function rebuild() {
-      meshes.forEach((m) => m.dispose());
-      meshes = blocks.map((b, i) => {
-        const m = b.type === 'sphere'
-          ? BABYLON.MeshBuilder.CreateSphere('stb', { diameter: 1, segments: 14 }, sc)
-          : BABYLON.MeshBuilder.CreateBox('stb', { size: 1 }, sc);
-        m.metadata = { bi: i };
-        m.material = mat2(b.color);
-        m.position.set(b.x, b.y, b.z);
-        m.rotation.set(deg2rad(b.rx), deg2rad(b.ry), deg2rad(b.rz));
-        m.scaling.set(b.w, b.h, b.d);
-        return m;
-      });
-      if (selected >= blocks.length) selected = -1;
-      if (hl) {
-        hl.removeAllMeshes();
-        if (selected >= 0 && meshes[selected]) hl.addMesh(meshes[selected], hex2c('#ff9a3d'));
-      }
-      updateRings(); refreshTree(); refreshProps(); refreshStatus();
-    }
-    function select(i) {
-      selected = i;
-      if (hl) {
-        hl.removeAllMeshes();
-        if (i >= 0 && meshes[i]) hl.addMesh(meshes[i], hex2c('#ff9a3d'));
-      }
-      updateRings(); refreshTree(); refreshProps(); refreshStatus();
-    }
-    function updateRings() {
-      if (!ringMeshes) return;
-      const on = tool === 'rotate' && selected >= 0 && !!meshes[selected];
-      for (const k of ['x', 'y', 'z']) ringMeshes[k].setEnabled(!!on);
-      if (!on) return;
-      const b = blocks[selected];
-      ringRoot.position.set(b.x, b.y, b.z);
-      const d = Math.max(3, b.type === 'sphere' ? Math.max(b.w, b.h, b.d) : Math.max(b.w, b.d)) + 2.6;
-      ringRoot.scaling.setAll(d / 6);
-    }
-    function refreshTree() {
-      E.count.textContent = blocks.length;
-      E.tree.replaceChildren();
-      blocks.forEach((b, i) => {
-        const row = mk('st-row' + (i === selected ? ' on' : ''));
-        row.innerHTML =
-          (b.type === 'sphere'
-            ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="8.5" ry="3.4"/></svg>'
-            : '<svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg>') +
-          '<span class="dot" style="background:' + b.color + '"></span><span class="nm">' + esc(b.name) + '</span><span class="idx">#' + (i + 1) + '</span>';
-        row.addEventListener('click', () => select(i));
-        row.addEventListener('dblclick', () => { select(i); focusSel(); });
-        E.tree.append(row);
-      });
-      E.empty.hidden = blocks.length > 0;
-    }
-    function refreshStatus() {
-      E.ssTool.textContent = tool.toUpperCase();
-      E.ssSnap.textContent = snapOn ? 'ON · 1ST / 15°' : 'OFF';
-      E.ssBlocks.textContent = blocks.length;
-      if (selected >= 0 && blocks[selected]) {
-        const b = blocks[selected];
-        E.ssSel.textContent = b.name;
-        E.selBadge.textContent = 'SEL · ' + b.name;
-        E.selTag.textContent = b.type.toUpperCase();
-        E.ssPos.textContent = r2(b.x) + ', ' + r2(b.y) + ', ' + r2(b.z);
-        E.ssRot.textContent = Math.round(b.rx) + '°, ' + Math.round(b.ry) + '°, ' + Math.round(b.rz) + '°';
-      } else {
-        E.ssSel.textContent = '—'; E.selBadge.textContent = ''; E.selTag.textContent = 'DUNIA';
-        E.ssPos.textContent = '—'; E.ssRot.textContent = '—';
-      }
-    }
-    function syncProps() {
-      if (selected < 0 || !blocks[selected]) return;
-      const b = blocks[selected];
-      E.props.querySelectorAll('input[data-k]').forEach((inp) => {
-        if (inp === document.activeElement) return;
-        const k = inp.dataset.k;
-        inp.value = String(k[0] === 'r' ? Math.round(b[k]) : r2(b[k]));
-      });
-    }
-
-    function label(t) { return mk('st-lab', t); }
-    function group(title, tag, fill) {
-      const g = mk('st-group');
-      const h = document.createElement('h4');
-      const s1 = document.createElement('span'); s1.textContent = title; h.append(s1);
-      if (tag) { const s2 = document.createElement('span'); s2.textContent = tag; h.append(s2); }
-      g.append(h);
-      const c = mk('st-c'); fill(c); g.append(c);
-      return g;
-    }
-    function textInput(val, max, oninput) {
-      const i = document.createElement('input');
-      i.type = 'text'; i.className = 'st-text'; i.maxLength = max; i.value = val; i.spellcheck = false;
-      i.addEventListener('input', () => oninput(i.value));
-      return i;
-    }
-    function colorInput(val, fn) {
-      const i = document.createElement('input');
-      i.type = 'color'; i.className = 'st-sw'; i.value = val; i.title = 'warna bebas';
-      i.addEventListener('input', () => fn(i.value));
-      return i;
-    }
-    function swatch(hex, on, fn) {
-      const s = document.createElement('button');
-      s.type = 'button'; s.className = 'st-sw' + (on ? ' on' : ''); s.style.background = hex;
-      s.title = hex; s.setAttribute('aria-label', 'warna ' + hex);
-      s.addEventListener('click', fn);
-      return s;
-    }
-    function smallBtn(t, fn) {
-      const x = document.createElement('button');
-      x.type = 'button'; x.className = 'st-btn wide'; x.textContent = t;
-      x.addEventListener('click', fn);
-      return x;
-    }
-    function rowBtns(t1, fn1, t2, fn2, danger2) {
-      const r = mk('st-rowbtns');
-      const mkBtn = (t, fn, danger) => {
-        const x = document.createElement('button');
-        x.type = 'button'; x.className = 'st-btn' + (danger ? ' danger' : ''); x.textContent = t;
-        x.addEventListener('click', fn);
-        return x;
-      };
-      r.append(mkBtn(t1, fn1, false));
-      if (t2) r.append(mkBtn(t2, fn2, danger2));
-      return r;
-    }
-    function triScrub(keys, i, kind) {
-      const wrap = mk('st-tri');
-      const AX = { x: 'c-x', y: 'c-y', z: 'c-z', rx: 'c-x', ry: 'c-y', rz: 'c-z', w: 'c-x', h: 'c-y', d: 'c-z' };
-      const LAB = { x: 'X', y: 'Y', z: 'Z', rx: 'X', ry: 'Y', rz: 'Z', w: 'W', h: 'H', d: 'D' };
-      const STEP = { pos: 0.06, rot: 0.6, size: 0.05 };
-      keys.forEach((k) => {
-        const b = blocks[i];
-        const f = mk('st-in');
-        const ax = document.createElement('span');
-        ax.className = 'ax ' + AX[k];
-        ax.textContent = LAB[k];
-        ax.title = 'geser kiri-kanan untuk scrub';
-        const inp = document.createElement('input');
-        inp.type = 'text'; inp.inputMode = 'decimal'; inp.spellcheck = false; inp.dataset.k = k;
-        const show = () => { inp.value = String(kind === 'rot' ? Math.round(b[k]) : r2(b[k])); };
-        const apply = (v) => {
-          b[k] = kind === 'pos' ? snapPos(v) : kind === 'rot' ? snapRot(v) : snapSize(v);
-          show(); sync(i);
-        };
-        show();
-        inp.addEventListener('change', () => {
-          const v = parseFloat(inp.value.replace(',', '.'));
-          if (!isNaN(v)) { commit('edit'); apply(v); } else show();
-          inp.blur();
-        });
-        ax.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          ax.setPointerCapture(e.pointerId);
-          commit('edit');
-          let v = b[k], lastX = e.clientX;
-          const mv = (ev) => { v += (ev.clientX - lastX) * STEP[kind] * (ev.shiftKey ? 0.15 : 1); lastX = ev.clientX; apply(v); };
-          const up = () => { ax.removeEventListener('pointermove', mv); ax.removeEventListener('pointerup', up); };
-          ax.addEventListener('pointermove', mv);
-          ax.addEventListener('pointerup', up);
-        });
-        f.append(ax, inp);
-        wrap.append(f);
-      });
-      return wrap;
-    }
-    function refreshProps() {
-      const box = E.props;
-      box.replaceChildren();
-      if (selected < 0 || !blocks[selected]) {
-        box.append(group('Dunia', 'global', (c) => {
-          c.append(label('Nama game'));
-          c.append(textInput(world.name, 24, (v) => { world.name = v; }));
-          c.append(label('Deskripsi'));
-          const ta = document.createElement('textarea');
-          ta.className = 'st-text'; ta.rows = 3; ta.maxLength = 120; ta.spellcheck = false; ta.value = world.desc;
-          ta.addEventListener('input', () => { world.desc = ta.value; });
-          c.append(ta);
-          c.append(label('Warna langit'));
-          const sw = mk('st-swatches');
-          SKY_PRESETS.forEach((h) => sw.append(swatch(h, h.toLowerCase() === world.sky.toLowerCase(), () => { world.sky = h; applySky(); refreshProps(); })));
-          sw.append(colorInput(world.sky, (v) => { world.sky = v; applySky(); }));
-          c.append(sw);
-        }));
-        box.append(group('Mulai bangun', 'add', (c) => {
-          c.append(rowBtns('+ CUBE', () => addBlock('box'), '+ SPHERE', () => addBlock('sphere')));
-          c.append(mk('st-note', 'Klik objek (viewport / Explorer) untuk mengedit.<br><b>ARROW</b> menggerakkan objek — tekan <b>R</b> dulu untuk memutar dengan ARROW.'));
-        }));
-        return;
-      }
-      const b = blocks[selected];
-      const i = selected;
-      box.append(group('Objek', b.type, (c) => {
-        c.append(textInput(b.name, 20, (v) => { const t = v.trim(); if (t) b.name = t; refreshTree(); refreshStatus(); }));
-      }));
-      box.append(group('Position', 'stud', (c) => c.append(triScrub(['x', 'y', 'z'], i, 'pos'))));
-      box.append(group('Rotation', 'derajat', (c) => {
-        c.append(triScrub(['rx', 'ry', 'rz'], i, 'rot'));
-        c.append(smallBtn('RESET ROTASI', () => { commit('rot'); b.rx = b.ry = b.rz = 0; sync(i); }));
-      }));
-      box.append(group('Size', b.type === 'sphere' ? 'diameter' : 'stud', (c) => c.append(triScrub(['w', 'h', 'd'], i, 'size'))));
-      box.append(group('Color', b.color, (c) => {
-        const sw = mk('st-swatches');
-        BLOCK_COLORS.forEach((h) => sw.append(swatch(h, h === b.color, () => { commit('color'); b.color = h; sync(i); refreshProps(); })));
-        sw.append(colorInput(b.color, (v) => { commit('color'); b.color = v.toLowerCase(); sync(i); refreshProps(); }));
-        c.append(sw);
-      }));
-      box.append(group('Actions', '', (c) => {
-        c.append(rowBtns('DUPLIKAT', () => duplicate(), 'HAPUS', () => del(), true));
-      }));
-    }
-
-    function commit(tag) {
-      const now = performance.now();
-      if (history.length && history[history.length - 1].tag === tag && now - lastCommitAt < 800) { lastCommitAt = now; return; }
-      history.push({ tag, data: JSON.stringify(blocks) });
-      if (history.length > 60) history.shift();
-      future.length = 0;
-      lastCommitAt = now;
-    }
-    function undo() {
-      if (!history.length) { flash('TIDAK ADA UNDO'); return; }
-      future.push(JSON.stringify(blocks));
-      blocks = JSON.parse(history.pop().data);
-      if (selected >= blocks.length) selected = -1;
-      rebuild();
-      log('undo — ' + blocks.length + ' blok', 'i');
-    }
-    function redo() {
-      if (!future.length) { flash('TIDAK ADA REDO'); return; }
-      history.push({ tag: 'redo', data: JSON.stringify(blocks) });
-      blocks = JSON.parse(future.pop().data);
-      if (selected >= blocks.length) selected = -1;
-      rebuild();
-      log('redo — ' + blocks.length + ' blok', 'i');
-    }
-    function addBlock(type) {
-      commit('add');
-      const f = cam.getForwardRay().direction;
-      const label2 = (type === 'sphere' ? 'Sphere ' : 'Cube ') + (++nameCount[type === 'sphere' ? 'sphere' : 'box']);
-      blocks.push({
-        id: uid++, name: label2, type,
-        x: Math.round(cam.target.x + f.x * 16), y: 2, z: Math.round(cam.target.z + f.z * 16),
-        w: 4, h: 4, d: 4, rx: 0, ry: 0, rz: 0,
-        color: pick(BLOCK_COLORS),
-      });
-      rebuild();
-      select(blocks.length - 1);
-      flash(label2 + ' DITAMBAHKAN');
-      log('+ ' + label2, 'o');
-    }
-    function del() {
-      if (selected < 0) { flash('PILIH OBJEK DULU'); return; }
-      commit('del');
-      const n = blocks[selected].name;
-      blocks.splice(selected, 1);
-      selected = -1;
-      rebuild();
-      log('hapus: ' + n, 'w');
-      flash(n + ' DIHAPUS');
-    }
-    function duplicate() {
-      if (selected < 0) { flash('PILIH OBJEK DULU'); return; }
-      commit('dup');
-      const b = blocks[selected];
-      const c = { ...b, id: uid++, name: b.name + ' copy', x: snapPos(b.x + Math.max(2, Math.ceil(b.w))) };
-      blocks.push(c);
-      rebuild();
-      select(blocks.length - 1);
-      log('duplikat: ' + c.name, 'o');
-    }
-    function setTool(t) {
-      if (tool === t) return;
-      tool = t;
-      E.toolBtns.forEach((x) => x.classList.toggle('on', x.dataset.tool === t));
-      E.toolHint.textContent = TOOL_HINTS[t];
-      updateRings(); refreshStatus();
-      log('tool: ' + t.toUpperCase(), 'i');
-    }
-    function toggleSnap() {
-      snapOn = !snapOn;
-      E.snapBtn.classList.toggle('on', snapOn);
-      refreshStatus();
-      flash('SNAP ' + (snapOn ? 'ON · 1 STUD / 15°' : 'OFF'));
-      log('snap ' + (snapOn ? 'ON (1 stud / 15°)' : 'OFF'), 'i');
-    }
-    function setView(v) {
-      if (v === 'top') { cam.alpha = -Math.PI / 2; cam.beta = 0.02; }
-      else if (v === 'side') { cam.alpha = -Math.PI / 2; cam.beta = Math.PI / 2 - 0.02; }
-      else { cam.alpha = -Math.PI / 2.4; cam.beta = 1.02; }
-      E.viewBtns.forEach((x) => x.classList.toggle('on', x.dataset.view === v));
-    }
-    function focusSel() {
-      if (selected < 0) { setView('iso'); return; }
-      const b = blocks[selected];
-      cam.setTarget(new V3(b.x, b.y, b.z));
-      cam.radius = Math.max(10, Math.max(b.w, b.h, b.d) * 2.6);
-      flash('FOKUS');
-    }
-    function applySky() {
-      if (!sc) return;
-      const [r, g, bb] = hexToSky(world.sky);
-      sc.clearColor = new BABYLON.Color4(r, g, bb, 1);
-    }
-    function quickRotate(dir) {
-      if (selected < 0) { flash('PILIH BLOK DULU'); return; }
-      commit('rot');
-      const b = blocks[selected];
-      b.ry = snapRot(b.ry + dir * (snapOn ? 15 : 5));
-      sync(selected);
-    }
-    function onKey(e) {
-      if (!isOpen) return;
-      const ae = document.activeElement;
-      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
-      const k = e.key;
-      if (e.ctrlKey || e.metaKey) {
-        const l = k.toLowerCase();
-        if (l === 'z') { e.preventDefault(); e.stopPropagation(); e.shiftKey ? redo() : undo(); }
-        else if (l === 'y') { e.preventDefault(); e.stopPropagation(); redo(); }
-        else if (l === 'd') { e.preventDefault(); e.stopPropagation(); duplicate(); }
-        else if (l === 's') { e.preventDefault(); e.stopPropagation(); saveAndTest(); }
-        return;
-      }
-      switch (k.toLowerCase()) {
-        case 'v': setTool('move'); return;
-        case 'r': setTool('rotate'); return;
-        case 's': setTool('scale'); return;
-        case 'g': toggleSnap(); return;
-        case 'f': focusSel(); return;
-        case 'q': quickRotate(-1); return;
-        case 'e': quickRotate(1); return;
-        case 'delete': case 'backspace': e.preventDefault(); e.stopPropagation(); del(); return;
-        case 'escape': e.preventDefault(); e.stopPropagation(); select(-1); return;
-      }
-      if (!k.startsWith('Arrow')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (selected < 0) { flash('PILIH BLOK DULU — KLIK OBJEK'); return; }
-      const b = blocks[selected];
-      const fine = e.altKey;
-      commit(tool);
-      if (tool === 'move') {
-        const st = fine ? 0.25 : (snapOn ? 1 : 0.5);
-        if (e.shiftKey && (k === 'ArrowUp' || k === 'ArrowDown')) {
-          b.y += k === 'ArrowUp' ? st : -st;
-        } else {
-          const { f: F, r: R } = screenAxes();
-          if (k === 'ArrowUp') { b.x += F[0] * st; b.z += F[1] * st; }
-          else if (k === 'ArrowDown') { b.x -= F[0] * st; b.z -= F[1] * st; }
-          else if (k === 'ArrowRight') { b.x += R[0] * st; b.z += R[1] * st; }
-          else { b.x -= R[0] * st; b.z -= R[1] * st; }
-        }
-      } else if (tool === 'rotate') {
-        const st = fine ? 1 : (snapOn ? 15 : 5);
-        if (e.shiftKey && (k === 'ArrowLeft' || k === 'ArrowRight')) {
-          b.rz = snapRot(b.rz + (k === 'ArrowRight' ? st : -st));
-        } else if (k === 'ArrowLeft') b.ry = snapRot(b.ry - st);
-        else if (k === 'ArrowRight') b.ry = snapRot(b.ry + st);
-        else if (k === 'ArrowUp') b.rx = snapRot(b.rx - st);
-        else b.rx = snapRot(b.rx + st);
-      } else {
-        const st = fine ? 0.1 : (snapOn ? 0.5 : 0.25);
-        if (e.shiftKey && (k === 'ArrowUp' || k === 'ArrowDown')) {
-          const u = k === 'ArrowUp' ? st : -st;
-          b.w = snapSize(b.w + u); b.h = snapSize(b.h + u); b.d = snapSize(b.d + u);
-        } else if (k === 'ArrowLeft') b.w = snapSize(b.w - st);
-        else if (k === 'ArrowRight') b.w = snapSize(b.w + st);
-        else if (k === 'ArrowUp') b.h = snapSize(b.h + st);
-        else b.h = snapSize(b.h - st);
-      }
-      sync(selected);
-    }
-
-    function load() {
-      history = []; future = []; selected = -1; uid = 1;
-      const def = customDefinition();
-      if (def && Array.isArray(def.blocks)) {
-        world = { name: def.name || 'My Game', desc: def.desc || 'Dunia buatan Voxely Studio.', sky: skyToHex(def.sky) };
-        blocks = def.blocks.map((b) => ({
-          id: uid++,
-          name: (typeof b.name === 'string' && b.name) ? b.name : 'Block ' + uid,
-          type: b.type === 'sphere' ? 'sphere' : 'box',
-          x: +b.x || 0, y: +b.y || 0, z: +b.z || 0,
-          w: +b.w || 4, h: +b.h || 4, d: +b.d || 4,
-          rx: +b.rx || 0, ry: +b.ry || 0, rz: +b.rz || 0,
-          color: isHex(b.color) ? b.color : '#ff6a00',
-        }));
-        log('memuat "' + world.name + '" — ' + blocks.length + ' blok', 'o');
-      } else {
-        world = { name: 'My Game', desc: 'Dunia buatan sendiri dari Voxely Studio.', sky: '#253141' };
-        blocks = [
-          { id: uid++, name: 'Spawn Pad', type: 'box', x: 0, y: 0.5, z: 0, w: 14, h: 1, d: 14, rx: 0, ry: 0, rz: 0, color: '#ff6a00' },
-          { id: uid++, name: 'Cube 1', type: 'box', x: 0, y: 3, z: -3, w: 4, h: 4, d: 4, rx: 0, ry: 45, rz: 0, color: '#3498db' },
-          { id: uid++, name: 'Sphere 1', type: 'sphere', x: 9, y: 2, z: -7, w: 4, h: 4, d: 4, rx: 0, ry: 0, rz: 0, color: '#2ecc71' },
-        ];
-        log('proyek baru — balok contoh siap diedit', 'o');
-      }
-      nameCount.box = blocks.filter((b) => /^Cube /.test(b.name)).length;
-      nameCount.sphere = blocks.filter((b) => /^Sphere /.test(b.name)).length;
-    }
-    function save() {
-      const data = {
-        name: (world.name || 'My Game').trim() || 'My Game',
-        desc: (world.desc || '').trim() || 'Dunia buatan Voxely Studio.',
-        sky: hexToSky(world.sky),
-        blocks: blocks.map((b) => ({
-          type: b.type === 'sphere' ? 'sphere' : 'box',
-          x: r2(b.x), y: r2(b.y), z: r2(b.z),
-          w: r2(b.w), h: r2(b.h), d: r2(b.d),
-          rx: Math.round(b.rx), ry: Math.round(b.ry), rz: Math.round(b.rz),
-          color: b.color,
-        })),
-      };
-      try { localStorage.setItem('voxely-mygame', JSON.stringify(data)); } catch (_) {}
-      customGame = data;
-      refreshCustomGame();
-      buildGameCards();
-      log('tersimpan — ' + blocks.length + ' blok', 'i');
-      return data;
-    }
-    function saveAndTest() {
-      if (!blocks.length) { flash('MINIMAL 1 BLOK'); log('tambah minimal 1 blok sebelum test', 'w'); return; }
-      save();
-      log('membuka game untuk test…', 'o');
-      closeStudio();
-      joinGame('mygame');
-    }
-    function openStudio() {
-      if (isOpen) return;
-      isOpen = true;
-      root.hidden = false;
-      load();
-      ensureScene();
-      eng.resize();
-      applySky();
-      setView('iso');
-      cam.setTarget(new V3(0, 3, 0));
-      cam.radius = 42;
-      rebuild();
-      select(-1);
-      E.toolBtns.forEach((x) => x.classList.toggle('on', x.dataset.tool === tool));
-      E.snapBtn.classList.toggle('on', snapOn);
-      E.toolHint.textContent = TOOL_HINTS[tool];
-      E.log.replaceChildren();
-      eng.runRenderLoop(() => sc.render());
-      log('VOXELY STUDIO siap', 'o');
-      log('klik objek untuk memilih · ARROW = geser · R = mode rotasi', 'i');
-      flash('STUDIO SIAP');
-    }
-    function closeStudio() {
-      if (!isOpen) return;
-      isOpen = false;
-      try { eng.stopRenderLoop(); } catch (_) {}
-      root.hidden = true;
-    }
-    function exitStudio() {
-      save();
-      closeStudio();
-      showToast('studio tersimpan');
-    }
-
-    E.toolBtns.forEach((btn) => btn.addEventListener('click', () => setTool(btn.dataset.tool)));
-    E.viewBtns.forEach((btn) => btn.addEventListener('click', () => setView(btn.dataset.view)));
-    $('stAddCube').addEventListener('click', () => addBlock('box'));
-    $('stAddSphere').addEventListener('click', () => addBlock('sphere'));
-    $('stDup').addEventListener('click', duplicate);
-    $('stDel').addEventListener('click', del);
-    $('stUndo').addEventListener('click', undo);
-    $('stRedo').addEventListener('click', redo);
-    $('stFocus').addEventListener('click', focusSel);
-    $('stSave').addEventListener('click', saveAndTest);
-    $('stExit').addEventListener('click', exitStudio);
-    E.snapBtn.addEventListener('click', toggleSnap);
-    const createBtn = $('createGame');
-    if (createBtn) createBtn.addEventListener('click', openStudio);
-    window.addEventListener('keydown', onKey, true);
-
-    return { open: openStudio, close: closeStudio, active: () => isOpen };
-  })();
-
-  // ============================================================
-  //  MASUK / KELUAR GAME
-  // ============================================================
-  function joinGame(id) {
-    if (!GAMES[id] || joining) return;
-    joining = true;
-    const g = GAMES[id];
-    applySky(g);
+  function enterLobby() {
     clearWorld();
-    for (const pid in others) { removeEntity(others[pid]); delete others[pid]; }
-    for (const pid in roster) if (pid !== 'me') delete roster[pid];
-    disposePreview();
-    hideMenu();
-    closeChat();
-    activeGame = g;
-    activeApi = g.build();
-    const spawn = activeApi.respawn();
-    spawnMe(spawn);
-    roster.me = { name: playerName, color: costume.shirt };
-    setState('playing');
-    $('log').replaceChildren();
-    addLog('masuk ke <b>' + esc(g.name) + '</b>' + (g.tag ? ' · ' + esc(g.tag) : ''), 'sys');
-    if (activeApi.intro) addLog(activeApi.intro, 'sys');
-    if (!online) addLog('mode solo — pemain lain tidak terlihat', 'sys');
-    else socket.emit('join', { game: id, name: playerName, costume, x: spawn.x, y: spawn.y, z: spawn.z });
-    updateRosterUI();
-    camera.setTarget(new V3(spawn.x, spawn.y + 2, spawn.z));
-    camera.radius = 26;
-    joining = false;
-  }
-  function leaveGame() {
-    if (online) socket.emit('leave');
-    for (const pid in others) { removeEntity(others[pid]); delete others[pid]; }
-    for (const pid in roster) delete roster[pid];
-    if (me) { removeEntity(me); me = null; }
-    clearWorld();
-    activeGame = null; activeApi = null;
-    hideMenu();
-    setState('lobby');
+    applySky(GAMES.baseplate);
+    makeGround();
+    cameraMode('play');
+    camera.setTarget(new V3(0, 3.2, 0));            // (melepas kunci kamera dari pemain, kalau ada)
+    camera.alpha = Math.PI / 2 + 0.4;               // kamera menghadap wajah avatar
+    camera.beta = 1.38;
+    camera.radius = 15;
     ensurePreview();
-    camera.setTarget(new V3(0, 3, 0));
-    camera.radius = 13;
-    camera.beta = 1.15;
-    camera.alpha = -Math.PI / 2 + 0.4;
-    buildGameCards();
-    updateRosterUI();
   }
-  function spawnMe(p) {
-    if (me) removeEntity(me);
-    me = createEntity({ id: 'me', name: playerName, x: p.x, y: p.y, z: p.z, ry: 0, ...costume }, true);
-    vy = 0; grounded = false;
+
+  // ---------- login ----------
+  const nameInput = $('name');
+  try { nameInput.value = localStorage.getItem('voxely-name') || ''; } catch (_) {}
+
+  $('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    playerName = nameInput.value.replace(/[\u0000-\u001f]/g, '').trim().slice(0, 16) || 'Guest' + Math.floor(1000 + Math.random() * 9000);
+    try { localStorage.setItem('voxely-name', nameInput.value.trim()); } catch (_) {}
+    $('hello').textContent = playerName;
+    setState('lobby');
+  });
+  $('rename').addEventListener('click', () => { setState('login'); nameInput.focus(); nameInput.select(); });
+
+  function joinGame(id, def) {
+    if (joining || state !== 'lobby') return;
+    joining = true;
+    pendingDef = def;
+    document.body.classList.add('joining');
+    socket.emit('join', { name: playerName, game: id, costume, spawn: def && def.spawn });
   }
-  function doRespawn() {
-    if (!activeApi || !me) return;
-    const p = activeApi.respawn();
-    me.root.position.set(p.x, p.y, p.z);
-    vy = 0;
+
+  // ---------- buka file .json ----------
+  $('openFile').addEventListener('click', () => $('fileGame').click());
+  $('fileGame').addEventListener('change', () => {
+    const f = $('fileGame').files && $('fileGame').files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const def = makeCustomDef(sanitizeGame(JSON.parse(String(reader.result))));
+        showCustomCard(def);
+        showToast('dimuat: ' + def.name + ' · ' + def.cg.blocks.length + ' blok');
+      } catch (err) {
+        showToast('file tidak valid: ' + err.message, 3500);
+      }
+    };
+    reader.onerror = () => showToast('gagal membaca file', 3000);
+    reader.readAsText(f);
+    $('fileGame').value = '';
+  });
+
+  // ============================================================
+  //  HUD: chat (tombol), menu (tombol), daftar pemain
+  // ============================================================
+  const log = $('log');
+  const msgInput = $('msg');
+  let chatOpen = false, menuOpen = false, unread = 0;
+
+  function updateBadge() {
+    $('badge').hidden = unread === 0;
+    $('badge').textContent = unread > 9 ? '9+' : String(unread);
   }
-  function updateRosterUI() {
-    $('count').textContent = Object.keys(roster).length;
+  function setChat(open) {
+    chatOpen = open;
+    $('chat').hidden = !open;
+    $('btnChat').classList.toggle('on', open);
+    if (open) { unread = 0; updateBadge(); log.scrollTop = log.scrollHeight; msgInput.focus(); }
+    else msgInput.blur();
+  }
+  function setMenu(open) {
+    menuOpen = open;
+    $('menu').hidden = !open;
+    keys.clear();
+    if (open) msgInput.blur();
+  }
+
+  $('btnChat').addEventListener('click', (e) => { e.currentTarget.blur(); setChat(!chatOpen); });
+  $('btnMenu').addEventListener('click', (e) => { e.currentTarget.blur(); setMenu(true); });
+  $('btnResume').addEventListener('click', () => setMenu(false));
+  $('btnExit').addEventListener('click', leaveGame);
+
+  $('chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (text) socket.emit('chat', text);
+    msgInput.value = '';
+    msgInput.blur();                                  // lepas fokus supaya WASD bisa dipakai lagi; panel tetap terbuka
+  });
+
+  // warna nama yang terlalu gelap dicerahkan supaya terbaca di panel hitam
+  function readable(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    if ((0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.45) {
+      r = Math.round(r + (255 - r) * 0.6); g = Math.round(g + (255 - g) * 0.6); b = Math.round(b + (255 - b) * 0.6);
+    }
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function addChat(m) {
+    const row = el('div', 'msg' + (m.system ? ' sys' : ''));
+    if (m.system) {
+      row.textContent = m.text;
+    } else {
+      const n = el('b', '', m.name + ': ');
+      n.style.color = readable(m.color);
+      row.append(n, m.text);                          // textContent-safe, tidak ada innerHTML
+    }
+    log.append(row);
+    while (log.children.length > 60) log.firstChild.remove();
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function renderRoster() {
+    const ids = Object.keys(roster);
+    $('count').textContent = ids.length;
     const ul = $('roster');
     ul.replaceChildren();
-    for (const id in roster) {
-      const r = roster[id];
-      const li = document.createElement('li');
-      if (id === 'me') li.className = 'me';
-      li.innerHTML = '<i style="background:' + (isHex(r.color) ? r.color : '#888') + '"></i>' + esc(r.name);
+    for (const id of ids) {
+      const li = el('li');
+      const dot = el('i');
+      dot.style.background = roster[id].shirt;
+      li.append(dot, roster[id].name);
+      if (id === myId) li.classList.add('me');
       ul.append(li);
     }
   }
 
   // ============================================================
-  //  TOAST, CHAT, MENU
+  //  INPUT: keyboard + kontrol sentuh
   // ============================================================
-  let toastT = 0;
-  function showToast(msg, ms = 2200) {
-    const t = $('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastT);
-    toastT = setTimeout(() => t.classList.remove('show'), ms);
-  }
-  const logBox = $('log');
-  function addLog(html, cls) {
-    const d = document.createElement('div');
-    d.className = 'msg ' + (cls || '');
-    d.innerHTML = html;
-    logBox.append(d);
-    logBox.scrollTop = 1e9;
-  }
-  let unread = 0;
-  function openChat() {
-    $('chat').hidden = false;
-    $('badge').hidden = true;
-    unread = 0;
-    for (const k in keys) keys[k] = false;
-    $('msg').focus();
-  }
-  function closeChat() {
-    $('chat').hidden = true;
-    $('msg').blur();
-  }
-  $('btnChat').addEventListener('click', () => { $('chat').hidden ? openChat() : closeChat(); });
-  $('chatForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const v = $('msg').value.trim();
-    if (!v) return;
-    $('msg').value = '';
-    addLog('<b>' + esc(playerName) + '</b> ' + esc(v));
-    if (me) say(me, v);
-    if (online) socket.emit('chat', { text: v });
+  const keys = new Set();
+  const down = (...codes) => codes.some((c) => keys.has(c));
+
+  window.addEventListener('keydown', (e) => {
+    if (state === 'building') { builderKey(e); return; }
+    if (state !== 'playing') return;
+    if (e.code === 'Escape') { setMenu(!menuOpen); return; }
+    if (menuOpen) return;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+    keys.add(e.code);
   });
-  function hideMenu() { $('menu').hidden = true; }
-  function toggleMenu(force) {
-    const m = $('menu');
-    const show = force !== undefined ? force : m.hidden;
-    m.hidden = !show;
-    if (show) {
-      $('menuGame').textContent = activeGame ? activeGame.name : '—';
-      $('menuName').textContent = playerName;
-    }
+  window.addEventListener('keyup', (e) => keys.delete(e.code));
+  window.addEventListener('blur', () => { keys.clear(); joyEnd(); jumpHeld = false; });
+
+  msgInput.addEventListener('focus', () => keys.clear());
+  msgInput.addEventListener('keydown', (e) => {
+    e.stopPropagation();                              // ketikan chat tidak menggerakkan karakter
+    if (e.key === 'Escape') msgInput.blur();
+  });
+
+  // ---------- joystick + tombol lompat (HP) ----------
+  const joy = { x: 0, y: 0, id: null };               // x: kanan(+), y: maju(+), nilai -1..1
+  let jumpHeld = false;
+  const joyEl = $('joy'), knob = $('joyKnob'), jumpEl = $('jumpBtn');
+  const capture = (elx, id) => { try { elx.setPointerCapture(id); } catch (_) {} };
+
+  function joyMove(e) {
+    const r = joyEl.getBoundingClientRect();
+    let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const max = r.width / 2 - 10;
+    const len = Math.hypot(dx, dy);
+    if (len > max) { dx = (dx / len) * max; dy = (dy / len) * max; }
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+    joy.x = dx / max;
+    joy.y = -dy / max;                                // layar: ke bawah = +, jadi dibalik
   }
-  $('btnResume').addEventListener('click', () => toggleMenu(false));
-  $('btnExit').addEventListener('click', () => leaveGame());
-  $('btnMenu').addEventListener('click', () => toggleMenu());
+  function joyEnd() { joy.id = null; joy.x = 0; joy.y = 0; knob.style.transform = ''; }
+
+  joyEl.addEventListener('pointerdown', (e) => { e.preventDefault(); joy.id = e.pointerId; capture(joyEl, e.pointerId); joyMove(e); });
+  joyEl.addEventListener('pointermove', (e) => { if (e.pointerId === joy.id) joyMove(e); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => joyEl.addEventListener(t, (e) => { if (e.pointerId === joy.id) joyEnd(); }));
+
+  let jumpId = null;
+  jumpEl.addEventListener('pointerdown', (e) => { e.preventDefault(); jumpId = e.pointerId; capture(jumpEl, e.pointerId); jumpHeld = true; jumpEl.classList.add('held'); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => jumpEl.addEventListener(t, (e) => {
+    if (e.pointerId === jumpId) { jumpId = null; jumpHeld = false; jumpEl.classList.remove('held'); }
+  }));
 
   // ============================================================
-  //  INPUT (keyboard + joystick mobile)
+  //  EDITOR GAME
+  //  klik kiri = pakai alat, klik kanan/tengah + drag = putar kamera
+  //  hasil: file voxely_<nama>.json  (nama default "mygame" -> voxely_mygame.json)
   // ============================================================
-  const keys = Object.create(null);
-  let mobileJump = false;
-  window.addEventListener('keydown', (e) => {
-    if (isTyping()) {
-      if (e.code === 'Escape') { closeChat(); e.target.blur(); }
+  const TYPE_COLOR = { lava: '#ff4d1a', checkpoint: '#ff6a00', finish: '#f1c40f' };
+  const BLOCK_COLORS = ['#ff6a00', '#e74c3c', '#f1c40f', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6', '#ecf0f1', '#9aa0a8', '#2c2c2c', '#8d5524', '#ff5fa2'];
+  const SKY_COLORS = ['#8ec9ff', '#f6a25f', '#2b2860', '#111111', '#a3d9a5'];
+
+  const B = {
+    tool: 'place', type: 'solid', w: 4, h: 4, d: 4, color: '#ff6a00',
+    name: 'mygame', sky: '#8ec9ff', ground: true, spawn: { x: 0, y: 0, z: 0 },
+    open: false,         // true selama editor terbuka
+    data: [],            // sumber data blok saat editor tertutup
+    blocks: [],          // { d: data, mesh } saat editor terbuka
+    history: [], hit: null,
+    ghost: null, ghostMat: null, marker: null, groundMesh: null, saveTimer: 0,
+  };
+  const builderRefresh = [];
+
+  const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'mygame';
+  const fileNameFor = (name) => 'voxely_' + slug(name) + '.json';
+
+  function draftObject() {
+    return { format: 'voxely-game', version: 1, name: B.name, author: playerName, sky: B.sky, ground: B.ground,
+      spawn: { ...B.spawn }, blocks: (B.open ? B.blocks.map((e) => e.d) : B.data).map((d) => ({ ...d })) };
+  }
+  function saveDraftNow() {
+    try { localStorage.setItem('voxely-draft', JSON.stringify(sanitizeGame(draftObject()))); } catch (_) {}
+  }
+  function scheduleSave() { clearTimeout(B.saveTimer); B.saveTimer = setTimeout(saveDraftNow, 400); }
+
+  function loadDraft() {
+    let cg = null;
+    try { const raw = JSON.parse(localStorage.getItem('voxely-draft') || 'null'); if (raw) cg = sanitizeGame(raw); } catch (_) {}
+    B.name = cg ? cg.name : 'mygame';
+    B.sky = cg ? cg.sky : '#8ec9ff';
+    B.ground = cg ? cg.ground : true;
+    B.spawn = cg ? cg.spawn : { x: 0, y: 0, z: 0 };
+    B.data = cg ? cg.blocks : [];
+  }
+
+  function refreshCount() { $('bcount').textContent = B.blocks.length + '/' + MAX_BLOCKS; }
+
+  function addBlock(data, record) {
+    if (B.blocks.length >= MAX_BLOCKS) { showToast('batas ' + MAX_BLOCKS + ' blok tercapai'); return null; }
+    const entry = { d: data, mesh: makeBlockMesh(data, false) };
+    entry.mesh.metadata = entry;
+    B.blocks.push(entry);
+    if (record) pushHistory({ op: 'add', d: data });
+    refreshCount(); scheduleSave();
+    return entry;
+  }
+  function removeBlock(entry, record) {
+    entry.mesh.dispose();
+    B.blocks.splice(B.blocks.indexOf(entry), 1);
+    if (record) pushHistory({ op: 'del', d: entry.d });
+    refreshCount(); scheduleSave();
+  }
+  function pushHistory(a) { B.history.push(a); if (B.history.length > 200) B.history.shift(); }
+  function undo() {
+    const a = B.history.pop();
+    if (!a) { showToast('tidak ada yang bisa diurungkan'); return; }
+    if (a.op === 'add') { const e = B.blocks.find((x) => x.d === a.d); if (e) removeBlock(e, false); }
+    else addBlock(a.d, false);
+    updateGhost();
+  }
+
+  // pasang blok menempel pada permukaan yang ditunjuk; sisi blok selalu jatuh di kelipatan 1 stud
+  function placeAt(pt, n, w, h, d) {
+    const dims = [w, h, d], p = [pt.x, pt.y, pt.z], nn = [n.x, n.y, n.z], c = [0, 0, 0];
+    for (let i = 0; i < 3; i++) {
+      const dir = Math.round(nn[i]);
+      if (dir !== 0) c[i] = half(p[i] + dir * dims[i] / 2);                       // sumbu normal: tepat menempel
+      else c[i] = Math.round(p[i] - dims[i] / 2) + dims[i] / 2;                   // sumbu lain: snap ke grid
+    }
+    c[0] = Math.min(XZ_LIM, Math.max(-XZ_LIM, c[0]));
+    c[1] = Math.min(Y_MAX, Math.max(Y_MIN, c[1]));
+    c[2] = Math.min(XZ_LIM, Math.max(-XZ_LIM, c[2]));
+    return c;
+  }
+
+  function makeGhost() {
+    B.ghostMat = new BABYLON.StandardMaterial('ghostMat', scene);
+    B.ghostMat.alpha = 0.5;
+    B.ghostMat.specularColor = BABYLON.Color3.Black();
+    B.ghost = BABYLON.MeshBuilder.CreateBox('ghost', { size: 1 }, scene);
+    B.ghost.material = B.ghostMat;
+    B.ghost.isPickable = false;
+    B.ghost.setEnabled(false);
+  }
+  function setGhost(pos, dims, hex) {
+    const col = BABYLON.Color3.FromHexString(hex);
+    B.ghost.position.set(pos[0], pos[1], pos[2]);
+    B.ghost.scaling.set(dims[0], dims[1], dims[2]);
+    B.ghostMat.diffuseColor = col;
+    B.ghostMat.emissiveColor = col.scale(0.5);
+    B.ghost.setEnabled(true);
+  }
+  function placeMarker() {                             // penanda titik spawn = avatar kita berdiri di sana
+    if (B.marker) B.marker.root.dispose();
+    B.marker = buildAvatar(costume);
+    B.marker.root.position.set(B.spawn.x, B.spawn.y + 2.5, B.spawn.z);
+  }
+
+  function updateGhost() {
+    if (state !== 'building' || !B.ghost) return;
+    B.hit = null;
+    const pi = scene.pick(scene.pointerX, scene.pointerY);
+    if (!pi || !pi.hit || !pi.pickedPoint) { B.ghost.setEnabled(false); return; }
+    const pt = pi.pickedPoint;
+    const n = (pi.getNormal && pi.getNormal(true)) || new V3(0, 1, 0);
+
+    if (B.tool === 'erase') {
+      const e = pi.pickedMesh && pi.pickedMesh.metadata;
+      if (e && e.d) { B.hit = { entry: e }; setGhost([e.d.x, e.d.y, e.d.z], [e.d.w * 1.03, e.d.h * 1.03, e.d.d * 1.03], '#e5484d'); }
+      else B.ghost.setEnabled(false);
+    } else if (B.tool === 'spawn') {
+      if (n.y < 0.5) { B.ghost.setEnabled(false); return; }                       // spawn hanya di permukaan atas
+      const s = { x: Math.round(pt.x), y: half(pt.y), z: Math.round(pt.z) };
+      B.hit = { spawn: s };
+      setGhost([s.x, s.y + 2.5, s.z], [2, 5, 2], '#ff6a00');
+    } else {
+      const c = placeAt(pt, n, B.w, B.h, B.d);
+      B.hit = { at: c };
+      setGhost(c, [B.w, B.h, B.d], B.color);
+    }
+  }
+
+  function useTool() {
+    updateGhost();
+    const h = B.hit;
+    if (!h) return;
+    if (B.tool === 'place' && h.at) {
+      const [x, y, z] = h.at;
+      const dup = B.blocks.some((e) => e.d.x === x && e.d.y === y && e.d.z === z && e.d.w === B.w && e.d.h === B.h && e.d.d === B.d);
+      if (!dup) addBlock({ x, y, z, w: B.w, h: B.h, d: B.d, color: B.color, type: B.type }, true);
+    } else if (B.tool === 'erase' && h.entry) {
+      removeBlock(h.entry, true);
+      updateGhost();
+    } else if (B.tool === 'spawn' && h.spawn) {
+      B.spawn = h.spawn;
+      placeMarker();
+      scheduleSave();
+      showToast('titik spawn dipindah');
+    }
+  }
+
+  canvas.addEventListener('pointermove', updateGhost);
+  canvas.addEventListener('pointerleave', () => { if (B.ghost) B.ghost.setEnabled(false); });
+  canvas.addEventListener('pointerdown', (e) => { if (state === 'building' && e.button === 0) useTool(); });
+
+  function setTool(t) {
+    B.tool = t;
+    document.querySelectorAll('#tools button').forEach((b) => b.classList.toggle('on', b.dataset.tool === t));
+    if (B.ghost) B.ghost.setEnabled(false);
+  }
+  function setType(t) {
+    B.type = t;
+    if (TYPE_COLOR[t]) B.color = TYPE_COLOR[t];       // lava/checkpoint/finish otomatis dapat warna khasnya
+    document.querySelectorAll('#types button').forEach((b) => b.classList.toggle('on', b.dataset.type === t));
+    syncBuilderUI();
+  }
+  function setSize(w, h, d) {
+    const c = (v) => Math.min(SIZE_MAX, Math.max(1, Math.round(Number(v)) || 1));
+    B.w = c(w); B.h = c(h); B.d = c(d);
+    $('dw').value = B.w; $('dh').value = B.h; $('dd').value = B.d;
+  }
+  function syncBuilderUI() {
+    builderRefresh.forEach((f) => f());
+    $('gname').value = B.name;
+    $('fname').textContent = fileNameFor(B.name);
+    $('gground').checked = B.ground;
+    setSize(B.w, B.h, B.d);
+    refreshCount();
+  }
+
+  function buildBuilderUI() {
+    builderRefresh.push(swatchRow($('sw-block'), BLOCK_COLORS, () => B.color, (hex) => { B.color = hex; builderRefresh.forEach((f) => f()); }));
+    builderRefresh.push(swatchRow($('sw-sky'), SKY_COLORS, () => B.sky, (hex) => {
+      B.sky = hex; applySky({ sky: hexToRgb(hex), fog: false }); builderRefresh.forEach((f) => f()); scheduleSave();
+    }));
+
+    document.querySelectorAll('#tools button').forEach((b) => b.addEventListener('click', () => setTool(b.dataset.tool)));
+    document.querySelectorAll('#types button').forEach((b) => b.addEventListener('click', () => setType(b.dataset.type)));
+    document.querySelectorAll('#presets button').forEach((b) => b.addEventListener('click', () => setSize(...b.dataset.size.split(','))));
+    for (const id of ['dw', 'dh', 'dd']) $(id).addEventListener('input', () => setSize($('dw').value, $('dh').value, $('dd').value));
+
+    $('gname').addEventListener('input', () => { B.name = cleanText($('gname').value, 24, 'mygame'); $('fname').textContent = fileNameFor(B.name); scheduleSave(); });
+    $('gground').addEventListener('change', () => {
+      B.ground = $('gground').checked;
+      if (B.groundMesh) { untrackDispose(B.groundMesh); B.groundMesh = null; }
+      if (B.ground) B.groundMesh = makeGround();
+      scheduleSave();
+    });
+
+    $('bTest').addEventListener('click', startTest);
+    $('bSave').addEventListener('click', saveGameFile);
+    $('bNew').addEventListener('click', () => {
+      if (!B.blocks.length || confirm('Hapus semua blok dan mulai dari awal?')) {
+        [...B.blocks].forEach((e) => removeBlock(e, false));
+        B.history = []; B.spawn = { x: 0, y: 0, z: 0 }; placeMarker(); scheduleSave();
+      }
+    });
+    $('bExit').addEventListener('click', exitBuilder);
+    for (const id of ['gname', 'dw', 'dh', 'dd']) $(id).addEventListener('focus', () => keys.clear());
+  }
+
+  function builderKey(e) {
+    if (e.target && e.target.tagName === 'INPUT') return;                         // sedang mengetik di kolom
+    if (e.ctrlKey || e.metaKey) { if (e.code === 'KeyZ') { e.preventDefault(); undo(); } return; }
+    if (e.code === 'Digit1') setTool('place');
+    else if (e.code === 'Digit2') setTool('erase');
+    else if (e.code === 'Digit3') setTool('spawn');
+    else if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) { e.preventDefault(); keys.add(e.code); }
+  }
+
+  function updateBuilder(dt) {                         // WASD menggeser titik pandang kamera, Q/E turun-naik
+    const fx = -Math.cos(camera.alpha), fz = -Math.sin(camera.alpha);
+    const k = (down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0);
+    const s = (down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0);
+    const u = (down('KeyE') ? 1 : 0) - (down('KeyQ') ? 1 : 0);
+    if (!k && !s && !u) return;
+    const sp = Math.max(12, camera.radius) * 0.9 * dt;
+    camera.target.x += (fx * k + fz * s) * sp;
+    camera.target.z += (fz * k - fx * s) * sp;
+    camera.target.y = Math.max(0, camera.target.y + u * sp);
+  }
+
+  function buildBuilderWorld() {
+    B.open = true;
+    applySky({ sky: hexToRgb(B.sky), fog: false });
+    B.groundMesh = B.ground ? makeGround() : null;
+    B.blocks = [];
+    for (const d of B.data) addBlock(d, false);
+    makeGhost();
+    placeMarker();
+  }
+  function teardownBuilderWorld() {
+    B.data = B.blocks.map((e) => e.d);
+    B.open = false;
+    B.blocks.forEach((e) => e.mesh.dispose());
+    B.blocks = [];
+    if (B.ghost) { B.ghost.dispose(); B.ghost = null; }
+    if (B.ghostMat) { B.ghostMat.dispose(); B.ghostMat = null; }
+    if (B.marker) { B.marker.root.dispose(); B.marker = null; }
+    B.groundMesh = null;
+    clearWorld();
+  }
+
+  function enterBuilder(fresh) {
+    if (fresh) { loadDraft(); B.history = []; }
+    disposePreview();
+    clearWorld();
+    buildBuilderWorld();
+    cameraMode('build');
+    camera.setTarget(new V3(0, 2, 10));
+    camera.alpha = -Math.PI / 2;
+    camera.beta = 1.0;
+    camera.radius = 60;
+    setTool('place');
+    syncBuilderUI();
+    keys.clear();
+    setState('building');
+  }
+  $('openBuilder').addEventListener('click', () => {
+    if (coarse && !hasMouse) { showToast('editor game butuh mouse — buka di komputer', 3500); return; }
+    enterBuilder(true);
+  });
+
+  function exitBuilder() {
+    teardownBuilderWorld();
+    saveDraftNow();
+    enterLobby();
+    setState('lobby');
+  }
+
+  function downloadJSON(obj, filename) {
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function saveGameFile() {
+    const cg = sanitizeGame(draftObject());
+    if (!cg.blocks.length) { showToast('pasang minimal 1 blok dulu'); return; }
+    const file = fileNameFor(cg.name);
+    downloadJSON(cg, file);
+    saveDraftNow();
+    showToast('tersimpan: ' + file, 3500);
+  }
+
+  // tes main langsung dari editor (solo, tanpa server)
+  function startTest() {
+    const cg = sanitizeGame(draftObject());
+    teardownBuilderWorld();
+    saveDraftNow();
+    mode = 'test';
+    document.body.classList.add('testplay');
+    const def = makeCustomDef(cg);
+    const info = { id: 'local', name: playerName, ...costume, x: cg.spawn.x, y: cg.spawn.y + 4, z: cg.spawn.z, ry: 0, game: def.id };
+    beginSession(info, { local: info }, def);
+  }
+
+  // ============================================================
+  //  SESI MAIN & NETWORKING
+  // ============================================================
+  let vy = 0, grounded = false, lastSent = 0;
+  const last = { x: 1e9, y: 0, z: 0, ry: 0 };
+
+  function beginSession(info, players, def) {
+    clearWorld();                                     // buang dunia & avatar lobby
+    disposePreview();
+    activeGame = def;
+    applySky(def);
+    activeApi = def.build();
+
+    myId = info.id;
+    for (const id in players) {
+      roster[id] = players[id];
+      if (id !== myId) others[id] = createEntity(players[id], false);
+    }
+    me = createEntity(info, true);
+    vy = 0; grounded = false;
+    last.x = 1e9;
+
+    cameraMode('play');
+    camera.alpha = -Math.PI / 2;                      // kamera di belakang punggung
+    camera.beta = 1.15;
+    camera.radius = 28;
+    camera.lockedTarget = me.root;                    // kamera mengikuti kita
+
+    log.replaceChildren();
+    unread = 0; updateBadge();
+    setChat(false); setMenu(false);
+    $('menuGame').textContent = def.name;
+    $('menuName').textContent = playerName;
+    $('btnExit').firstElementChild.textContent = mode === 'test' ? 'Kembali ke editor' : 'Keluar dari game';
+    setState('playing');
+    renderRoster();
+    if (activeApi.intro) showToast(activeApi.intro, 3500);
+  }
+
+  function endSession() {
+    setMenu(false);
+    setChat(false);
+    camera.setTarget(new V3(0, 3.2, 0));              // lepas kunci kamera SEBELUM mesh pemain dibuang
+    for (const id of Object.keys(others)) { removeEntity(others[id]); delete others[id]; }
+    for (const id of Object.keys(roster)) delete roster[id];
+    removeEntity(me);
+    me = null; myId = null; activeGame = null; activeApi = null;
+    keys.clear(); joyEnd(); jumpHeld = false; jumpEl.classList.remove('held');
+    clearTimeout(toastTimer); $('toast').classList.remove('show');
+  }
+
+  // menu -> Keluar. online: balik ke lobby (koneksi tetap hidup).  tes main: balik ke editor.
+  function leaveGame() {
+    if (state !== 'playing') return;
+    if (mode === 'test') {
+      endSession();
+      mode = 'online';
+      document.body.classList.remove('testplay');
+      enterBuilder(false);
       return;
     }
-    if (state === 'playing' && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
-    if (e.code === 'Escape') { if (state === 'playing') toggleMenu(); return; }
-    if (e.code === 'Slash' && state === 'playing' && $('chat').hidden) { e.preventDefault(); openChat(); return; }
-    keys[e.code] = true;
-  });
-  window.addEventListener('keyup', (e) => { keys[e.code] = false; });
-  window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; mobileJump = false; });
-
-  const joy = $('joystick'), knob = $('joystickKnob');
-  let joyVec = { x: 0, y: 0 }, joyId = null;
-  function joyMove(e) {
-    const r = joy.getBoundingClientRect();
-    let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-    const m = Math.hypot(dx, dy), max = r.width / 2 - 14;
-    if (m > max && m > 0) { dx = dx / m * max; dy = dy / m * max; }
-    knob.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px))';
-    joyVec = { x: dx / max, y: dy / max };
+    socket.emit('leave');
+    endSession();
+    enterLobby();
+    setState('lobby');
   }
-  joy.addEventListener('pointerdown', (e) => { joyId = e.pointerId; joy.setPointerCapture(joyId); joyMove(e); });
-  joy.addEventListener('pointermove', (e) => { if (e.pointerId === joyId) joyMove(e); });
-  const joyEnd = (e) => { if (e.pointerId !== joyId) return; joyId = null; joyVec = { x: 0, y: 0 }; knob.style.transform = 'translate(-50%, -50%)'; };
-  joy.addEventListener('pointerup', joyEnd);
-  joy.addEventListener('pointercancel', joyEnd);
-  $('jumpButton').addEventListener('pointerdown', (e) => { e.preventDefault(); mobileJump = true; });
-  $('jumpButton').addEventListener('pointerup', () => { mobileJump = false; });
-  $('jumpButton').addEventListener('pointercancel', () => { mobileJump = false; });
+
+  socket.on('counts', (c) => {
+    lastCounts = c;
+    document.querySelectorAll('[data-count]').forEach((n) => { n.textContent = c[n.dataset.count] || 0; });
+  });
+
+  socket.on('init', ({ me: info, players }) => {
+    if (state !== 'lobby' || !joining) return;
+    joining = false;
+    document.body.classList.remove('joining');
+    const def = pendingDef || GAMES[info.game];
+    pendingDef = null;
+    mode = 'online';
+    beginSession(info, players, def);
+  });
+
+  socket.on('player-joined', (p) => {
+    if (state !== 'playing' || mode !== 'online' || others[p.id]) return;
+    roster[p.id] = p;
+    others[p.id] = createEntity(p, false);
+    renderRoster();
+  });
+
+  socket.on('player-moved', (d) => {
+    const e = others[d.id];
+    if (!e) return;
+    e.target.set(d.x, d.y, d.z);
+    e.ry = d.ry;
+  });
+
+  socket.on('player-left', (id) => {
+    if (state !== 'playing' || mode !== 'online') return;
+    removeEntity(others[id]);
+    delete others[id];
+    delete roster[id];
+    renderRoster();
+  });
+
+  socket.on('chat', (m) => {
+    if (state !== 'playing' || mode !== 'online') return;
+    addChat(m);
+    if (!m.system && m.id !== myId && !chatOpen) { unread++; updateBadge(); }
+    if (m.id) {
+      const e = m.id === myId ? me : others[m.id];
+      if (e) say(e, m.text);
+    }
+  });
+
+  const setConn = (cls, text) => { $('conn').className = 'conn ' + cls; $('conn').lastElementChild.textContent = text; };
+  let lostGame = false;
+  socket.on('connect', () => { setConn('ok', 'terhubung ke server'); if (!lostGame) document.body.classList.remove('offline'); });
+  socket.on('connect_error', () => setConn('err', 'server belum menjawab, mencoba lagi… (hosting gratis bisa butuh ~1 menit untuk bangun)'));
+  socket.on('disconnect', () => {
+    setConn('err', 'terputus dari server');
+    if (state === 'playing' && mode === 'online') lostGame = true;       // sedang main online: state room hilang, harus muat ulang
+    if (lostGame || state === 'login' || state === 'lobby') document.body.classList.add('offline');   // di editor / tes main tetap bisa jalan offline
+  });
 
   // ============================================================
-  //  FISIKA & LOOP UTAMA
+  //  GAME LOOP
   // ============================================================
-  let vy = 0, grounded = false, lastSend = 0;
+  const r2 = (n) => Math.round(n * 100) / 100;
+
+  function respawn() {
+    const p = activeApi.respawn();
+    me.root.position.set(p.x, p.y, p.z);
+    vy = 0;
+    me.root.computeWorldMatrix(true);
+  }
+
+  function updateLocal(dt, t) {
+    // arah maju = arah kamera (diproyeksikan ke tanah)
+    const fx = -Math.cos(camera.alpha), fz = -Math.sin(camera.alpha);
+    let fwd = (down('KeyW', 'ArrowUp') ? 1 : 0) - (down('KeyS', 'ArrowDown') ? 1 : 0);
+    let str = (down('KeyD', 'ArrowRight') ? 1 : 0) - (down('KeyA', 'ArrowLeft') ? 1 : 0);
+    const jm = Math.hypot(joy.x, joy.y);                                    // joystick: analog, ada zona mati kecil di tengah
+    if (jm > 0.15) { const k = Math.min(1, (jm - 0.15) / 0.75) / jm; fwd += joy.y * k; str += joy.x * k; }
+    let dx = fx * fwd + fz * str;
+    let dz = fz * fwd - fx * str;
+    const len = Math.hypot(dx, dz);
+    const walking = len > 0.05;
+    if (len > 1) { dx /= len; dz /= len; }
+    if (walking) me.avatar.rotation.y = lerpAngle(me.avatar.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 15));
+
+    if (grounded && (down('Space') || jumpHeld)) { vy = JUMP_POWER; grounded = false; }
+    vy = Math.max(vy - GRAVITY * dt, -150);
+
+    const dy = vy * dt;
+    const y0 = me.root.position.y;
+    me.root.moveWithCollisions(new V3(dx * SPEED * dt, dy, dz * SPEED * dt));
+    const movedY = me.root.position.y - y0;
+
+    if (vy < 0 && movedY > dy + 0.001) { grounded = true; vy = 0; }        // mendarat
+    else {
+      grounded = false;
+      if (vy > 0 && movedY < dy - 0.001) vy = 0;                            // kepala kejedot
+    }
+
+    if (me.root.position.y < activeGame.voidY) respawn();                   // jatuh ke void
+    else if (activeApi.tick(me.root.position, grounded) === 'respawn') respawn();   // mis. kena lava
+    me.root.computeWorldMatrix(true);                                       // biar kamera tidak telat 1 frame
+    animate(me, walking && grounded, t);
+
+    // kirim posisi ke server hanya kalau berubah (tes main = tanpa server)
+    if (mode !== 'online') return;
+    const now = performance.now();
+    if (now - lastSent >= SEND_EVERY) {
+      const p = me.root.position, ry = me.avatar.rotation.y;
+      if (Math.abs(p.x - last.x) + Math.abs(p.y - last.y) + Math.abs(p.z - last.z) > 0.01 || Math.abs(ry - last.ry) > 0.01) {
+        socket.emit('move', { x: r2(p.x), y: r2(p.y), z: r2(p.z), ry: r2(ry) });
+        last.x = p.x; last.y = p.y; last.z = p.z; last.ry = ry;
+      }
+      lastSent = now;
+    }
+  }
+
+  function updateRemote(e, t) {
+    const p = e.root.position;
+    const flat = Math.hypot(e.target.x - p.x, e.target.z - p.z);
+    if (V3.DistanceSquared(p, e.target) > 900) p.copyFrom(e.target);         // respawn/teleport -> langsung pindah
+    else V3.LerpToRef(p, e.target, 0.25, p);                                  // halus antar update jaringan
+    e.avatar.rotation.y = lerpAngle(e.avatar.rotation.y, e.ry, 0.25);
+    animate(e, flat > 0.1, t);
+  }
+
   scene.onBeforeRenderObservable.add(() => {
     const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
     const t = performance.now() / 1000;
-
-    // avatar contoh di lobby berputar pelan
-    if (state === 'lobby' && preview) preview.root.rotation.y += dt * 0.6;
-
-    // interpolasi pemain lain
-    for (const id in others) {
-      const o = others[id];
-      const p = o.root.position;
-      const moving = V3.Distance(p, o.target) > 0.15;
-      p.x += (o.target.x - p.x) * 0.18;
-      p.y += (o.target.y - p.y) * 0.18;
-      p.z += (o.target.z - p.z) * 0.18;
-      o.avatar.rotation.y = lerpAngle(o.avatar.rotation.y, o.tRy || 0, 0.2);
-      animate(o, moving, t);
+    if (state === 'building') { updateBuilder(dt); return; }
+    if (state !== 'playing' || !me) {                                         // login/lobby: avatar contoh menoleh pelan
+      if (preview) preview.root.rotation.y = Math.sin(t * 0.7) * 0.55;
+      return;
     }
-
-    if (state !== 'playing' || !me || !activeGame) return;
-
-    // ----- input gerak -----
-    let ix = 0, iz = 0;
-    if (!isTyping() && $('menu').hidden) {
-      ix = ((keys.KeyD || keys.ArrowRight) ? 1 : 0) - ((keys.KeyA || keys.ArrowLeft) ? 1 : 0);
-      iz = ((keys.KeyW || keys.ArrowUp) ? 1 : 0) - ((keys.KeyS || keys.ArrowDown) ? 1 : 0);
-      ix += joyVec.x; iz += -joyVec.y;
-    }
-    const len = Math.hypot(ix, iz);
-    let movingLocal = false;
-    if (len > 0.15) {
-      ix /= len; iz /= len;
-      const fwd = camera.getForwardRay().direction;
-      const fl = Math.hypot(fwd.x, fwd.z) || 1;
-      const F = { x: fwd.x / fl, z: fwd.z / fl };
-      const dx = F.x * iz + F.z * ix;
-      const dz = F.z * iz - F.x * ix;
-      me.root.moveWithCollisions(new V3(dx * SPEED * dt, 0, dz * SPEED * dt));
-      me.avatar.rotation.y = lerpAngle(me.avatar.rotation.y, Math.atan2(dx, dz), 0.25);
-      movingLocal = true;
-    }
-
-    // ----- lompat & gravitasi -----
-    if ((keys.Space || mobileJump) && grounded) { vy = JUMP_POWER; grounded = false; }
-    vy -= GRAVITY * dt;
-    const yBefore = me.root.position.y;
-    me.root.moveWithCollisions(new V3(0, vy * dt, 0));
-    const dyActual = me.root.position.y - yBefore;
-    if (Math.abs(dyActual - vy * dt) > 1e-4) { if (vy < 0) grounded = true; vy = 0; }
-    else if (vy < 0) grounded = false;
-
-    animate(me, movingLocal, t);
-
-    // ----- kamera ikuti -----
-    camera.target.set(me.root.position.x, me.root.position.y + 2, me.root.position.z);
-
-    // ----- jatuh ke kehampaan / logika game -----
-    if (me.root.position.y < activeGame.voidY) doRespawn();
-    if (activeApi && activeApi.tick) activeApi.tick(me.root.position, grounded);
-
-    // ----- kirim posisi -----
-    const now = performance.now();
-    if (online && now - lastSend > SEND_EVERY) {
-      lastSend = now;
-      const p = me.root.position;
-      socket.emit('move', { x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), ry: +me.avatar.rotation.y.toFixed(2) });
-    }
+    updateLocal(dt, t);
+    for (const id in others) updateRemote(others[id], t);
   });
 
-  // ============================================================
-  //  HANDLER SOCKET (protokol server — lihat catatan)
-  // ============================================================
-  if (socket) {
-    socket.on('welcome', (d) => { myId = d && d.id; if (d && d.counts) updateCounts(d.counts); });
-    socket.on('joined', (d) => {
-      (d && d.players || []).forEach((p) => addRemote(p));
-      updateRosterUI();
-    });
-    socket.on('peer-join', (p) => {
-      if (!p || p.id === myId) return;
-      addRemote(p);
-      addLog('<b>' + esc(p.name || 'pemain') + '</b> bergabung', 'sys');
-      updateRosterUI();
-    });
-    socket.on('peer-leave', (d) => {
-      const id = d && d.id;
-      if (!id || !others[id]) return;
-      addLog('<b>' + esc(roster[id] ? roster[id].name : 'pemain') + '</b> keluar', 'sys');
-      removeEntity(others[id]);
-      delete others[id];
-      delete roster[id];
-      updateRosterUI();
-    });
-    socket.on('state', (d) => {
-      (d && d.players || []).forEach((p) => {
-        const o = others[p.id];
-        if (!o) return;
-        o.target.set(+p.x || 0, +p.y || 0, +p.z || 0);
-        o.tRy = +p.ry || 0;
-      });
-    });
-    socket.on('chat', (d) => {
-      if (!d || d.id === myId) return;
-      const o = others[d.id];
-      const nm = roster[d.id] ? roster[d.id].name : (d.name || 'pemain');
-      addLog('<b>' + esc(nm) + '</b> ' + esc(d.text || ''));
-      if (o) say(o, d.text || '');
-      if ($('chat').hidden) {
-        unread++;
-        $('badge').hidden = false;
-        $('badge').textContent = unread > 9 ? '9+' : unread;
-      }
-    });
-    socket.on('counts', (c) => updateCounts(c || {}));
-  }
-  function addRemote(p) {
-    if (!p || !p.id || others[p.id]) return;
-    const info = {
-      id: p.id, name: p.name || 'pemain',
-      x: +p.x || 0, y: +p.y || 8, z: +p.z || 0, ry: +p.ry || 0,
-      shirt: isHex(p.shirt) ? p.shirt : (p.costume && isHex(p.costume.shirt) ? p.costume.shirt : '#2c2c2c'),
-      pants: isHex(p.pants) ? p.pants : (p.costume && isHex(p.costume.pants) ? p.costume.pants : '#2c2c2c'),
-      skin: isHex(p.skin) ? p.skin : (p.costume && isHex(p.costume.skin) ? p.costume.skin : '#f6d55c'),
-    };
-    others[p.id] = createEntity(info, false);
-    others[p.id].tRy = info.ry;
-    roster[p.id] = { name: info.name, color: info.shirt };
-  }
-
-  // ============================================================
-  //  ALUR LOGIN -> LOBBY
-  // ============================================================
-  const ANIMALS = ['Kodok', 'Bebek', 'Kucing', 'Rubah', 'Panda', 'Otter', 'Gagak', 'Kakap'];
-  try { $('name').value = localStorage.getItem('voxely-name') || ''; } catch (_) {}
-  $('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    playerName = ($('name').value.trim() || pick(ANIMALS) + (1 + Math.floor(Math.random() * 99))).slice(0, 16);
-    try { localStorage.setItem('voxely-name', playerName); } catch (_) {}
-    enterLobby();
-  });
-  $('rename').addEventListener('click', () => {
-    setState('login');
-    $('name').value = playerName;
-    $('name').focus();
-    disposePreview();
-  });
-  function enterLobby() {
-    $('hello').textContent = playerName;
-    setState('lobby');
-    ensurePreview();
-    buildGameCards();
-    camera.setTarget(new V3(0, 3, 0));
-    camera.radius = 13;
-    camera.beta = 1.15;
-    camera.alpha = -Math.PI / 2 + 0.4;
-    updateRosterUI();
-  }
-
-  // ============================================================
-  //  INIT & RENDER
-  // ============================================================
-  buildCostumeUI();
+  // ---------- start ----------
   buildGameCards();
+  buildCostumeUI();
+  buildBuilderUI();
+  enterLobby();                                                               // dunia lobby jadi latar layar login
+  engine.runRenderLoop(() => scene.render());
   window.addEventListener('resize', () => engine.resize());
-  engine.runRenderLoop(() => { if (!Studio.active()) scene.render(); });
 })();
 </script>
 </body>
